@@ -1,0 +1,7 @@
+*.py
+*.sql
+*.db
+*.parquet
+*.pyc
+*.csv
+*.txt
