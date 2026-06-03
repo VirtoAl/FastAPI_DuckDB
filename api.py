@@ -33,6 +33,61 @@ con = duckdb.connect(':memory:')
 
 app = FastAPI(title="Minha API com DuckDB", summary="Dados retirados do banco de dados do DuckDB serão demonstrados a seguir")
 
+con.execute("CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('reatividadedeestgioduckdb/orgao.parquet');")
+
+
+cur_time = time.time()
+print(f"Tempo antes: {time.time() - cur_time}")
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/data_0.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/estacao.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/operacao.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/orgao.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/qualidade.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/sensor.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_coleta.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_estacao.parquet')").df()  
+print(df.head(5))
+
+df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/unidade_medida.parquet')").df()  
+print(df.head(5))
+
+print(f"Tempo para criar tabela: {(time.time() - cur_time)} segundos")
+
+@app.get("/estacoes")
+async def funcao():
+
+    df = con.execute("SELECT * FROM orgao LIMIT 10;").df()
+    dados = df.to_dict('records')
+
+
+    return dados
+
+@app.get("/estacoes/{id}")
+async def funcao(id: Annotated[int, Path()]):
+
+    df = con.execute("SELECT * FROM orgao WHERE id = ?", [id]).df()
+    dados = df.to_dict('records')
+
+    return dados
+
+
+'''
+
 # Carrega dados do parquet se existir, senão cria tabela vazia
 
 if os.path.exists('backup.parquet'):
@@ -45,6 +100,9 @@ else:
     # Se não existir backup, cria tabela vazia
     df = con.sql(QUERIES["teste2"])
     print("✓ Tabela test criada vazia")
+
+
+
 
 class usuario(BaseModel):
     titulo: str
@@ -100,9 +158,6 @@ async def create_file():
     }
 
 
-'''
-
-
 @app.get("/teste")
 async def teste():
     
@@ -147,9 +202,6 @@ def register_patient(patient: Patient):
 def list_patients():
     result = con.execute("SELECT * FROM patients").fetchall()
     return {"patients": result}
-
-    
-
 
     try:
     with duckdb.connect('my_database.db') as con:
