@@ -3,9 +3,13 @@ import duckdb
 import glob
 import time
 import json
-from fastapi import FastAPI, Path, Body, UploadFile
+import pytz
+import pandas as pd
+import numpy as np
+from fastapi import FastAPI, Path, Body, UploadFile, Query
 from typing import Annotated
 from pydantic import BaseModel
+from datetime import datetime
 
 def carregar_queries(caminho: str =  "queries.sql"):
     queries: dict = {}
@@ -33,57 +37,143 @@ con = duckdb.connect(':memory:')
 
 app = FastAPI(title="Minha API com DuckDB", summary="Dados retirados do banco de dados do DuckDB serão demonstrados a seguir")
 
+con.execute("CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('reatividadedeestgioduckdb/data_0.parquet');")
+
+con.execute("CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('reatividadedeestgioduckdb/estacao.parquet');")
+
+con.execute("CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('reatividadedeestgioduckdb/operacao.parquet');")
+
 con.execute("CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('reatividadedeestgioduckdb/orgao.parquet');")
 
+con.execute("CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('reatividadedeestgioduckdb/qualidade.parquet');")
 
-cur_time = time.time()
-print(f"Tempo antes: {time.time() - cur_time}")
+con.execute("CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('reatividadedeestgioduckdb/sensor.parquet');")
 
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/data_0.parquet')").df()  
-print(df.head(5))
+con.execute("CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_coleta.parquet');")
 
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/estacao.parquet')").df()  
-print(df.head(5))
+con.execute("CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_estacao.parquet');")
 
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/operacao.parquet')").df()  
-print(df.head(5))
+con.execute("CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('reatividadedeestgioduckdb/unidade_medida.parquet');")
 
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/orgao.parquet')").df()  
-print(df.head(5))
-
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/qualidade.parquet')").df()  
-print(df.head(5))
-
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/sensor.parquet')").df()  
-print(df.head(5))
-
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_coleta.parquet')").df()  
-print(df.head(5))
-
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/tipo_estacao.parquet')").df()  
-print(df.head(5))
-
-df = con.execute("SELECT * FROM read_parquet('reatividadedeestgioduckdb/unidade_medida.parquet')").df()  
-print(df.head(5))
-
-print(f"Tempo para criar tabela: {(time.time() - cur_time)} segundos")
-
-@app.get("/estacoes")
-async def funcao():
-
-    df = con.execute("SELECT * FROM orgao LIMIT 10;").df()
-    dados = df.to_dict('records')
+# cur_time = time.time()
+# print(f"Tempo antes: {time.time() - cur_time}")
 
 
-    return dados
+# print(f"Tempo para criar tabela: {(time.time() - cur_time)} segundos")
+
+# meu_timestamp = datetime.now().timestamp()
+
+# df = con.execute("SELECT data_hora FROM data_0 WHERE data_hora = '2026-06-05 T12:11:00-03:00' LIMIT 10").df()
+# print(df)
+
+@app.get("/dados")
+async def dados():
+    df = con.execute("SELECT data_0.* FROM data_0 LIMIT 10").df()
+    
+    resultado = df.to_dict('records')
+
+    return resultado
+
+@app.get("/dadosfiltro")
+async def dados_estacao(id_estacao: Annotated[int, Query()]):
+
+    df = con.execute("SELECT data_0.*, estacao.nome, estacao.orgao_id FROM data_0 LEFT JOIN estacao ON data_0.estacao_id = estacao.id WHERE data_0.estacao_id = ?  LIMIT 10;", [id_estacao]).df()
+
+    resultado = df.to_dict('records')
+
+    return resultado
+
+@app.get("/horafiltro")
+async def horario(datahora: Annotated[str, Query()]):
+
+    
+
+    df = con.execute("SELECT * FROM data_0  WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 10", [datahora]).df()
+
+
+    df = df.to_dict('records')
+
+    return df
+
 
 @app.get("/estacoes/{id}")
 async def funcao(id: Annotated[int, Path()]):
+    # DuckDB puro - mais rápido
+    df = con.execute("SELECT * FROM estacao WHERE id = ?", [id]).df()
+    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+    dados = df.to_dict('records')
+    
+    return dados
 
-    df = con.execute("SELECT * FROM orgao WHERE id = ?", [id]).df()
+@app.get("operacao")
+async def operacao(parametros: Annotated[int, Query]):
+    return None
+
+@app.get("/orgaos")
+async def funcao():
+    # DuckDB puro - mais rápido
+    # resultado = con.execute("SELECT * FROM orgao").fetchall()
+    # colunas = [desc[0] for desc in con.description]
+    # dados = [dict(zip(colunas, row)) for row in resultado]
+    
+    df = con.execute("SELECT * FROM orgao").df()
+    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict('records')
 
     return dados
+
+
+
+
+@app.get("/qualidade")
+async def teste(parametros: Annotated[int, Query]):
+
+    return None
+
+
+@app.get("/sensor")
+async def teste(parametros: Annotated[int, Query]):
+
+    return None
+
+@app.get("/tipo_coleta")
+async def teste(parametros: Annotated[int, Query]):
+
+    return None
+
+@app.get("/tipo_estacao")
+async def teste(parametros: Annotated[int, Query]):
+
+    return None
+
+
+@app.get("/unidade_medida")
+async def teste(parametros: Annotated[int, Query]):
+
+    df = con.execute("SELECT * FROM unidade_medida").df()
+    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+    dados = df.to_dict('records')
+
+    return dados
+
+
+
+
+# @app.get("/estacoes")
+# async def funcao():
+#     # DuckDB puro - mais rápido
+#     df = con.execute("SELECT * FROM estacao LIMIT 10").df()
+
+#     #colunas = [desc[0] for desc in con.description]
+#     #dados = [dict(zip(colunas, row)) for row in resultado]
+#     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+
+#     dados = df.to_dict('records')
+
+#     return dados
+
+
+
 
 
 '''
