@@ -6,9 +6,9 @@ import json
 import pytz
 import pandas as pd
 import numpy as np
-from fastapi import FastAPI, Path, Body, UploadFile, Query
+from fastapi import FastAPI, Path, Body, UploadFile, Query, Header
 from typing import Annotated
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 def carregar_queries(caminho: str =  "queries.sql"):
@@ -66,18 +66,57 @@ con.execute("CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_par
 # df = con.execute("SELECT data_hora FROM data_0 WHERE data_hora = '2026-06-05 T12:11:00-03:00' LIMIT 10").df()
 # print(df)
 
-@app.get("/dados")
-async def dados():
-    df = con.execute("SELECT data_0.* FROM data_0 LIMIT 10").df()
+
+con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
+
+class Filtro(BaseModel):
+    model_config = {"extra": "forbid"}
     
+    data_hora: bool = Field(description="filtro por data e hora", default= False)
+    estacao_id: bool = Field(description="filtro por ID da estação", default= False)
+    sensor_id: bool = Field(description="filtro por ID do sensor", default= False)
+    qualidade_id: bool = Field(description="filtro por ID da qualidade", default= False)
+
+
+@app.get("/dadosBrutos")
+async def dados():
+    df = con.execute("SELECT id, nome FROM estacao ORDER BY id").df()
+    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+    dados = df.to_dict('records')
+
+    return dados
+
+@app.get("/filtroDeDados")
+async def bases_em_funcionamento(dados_filtro: Annotated[Filtro, Query(title="Base de dados em execução",description="filtro de dados")]):
+
+
+    lista_de_tuplas:list = []
+
+    for dados in dados_filtro:
+        if (dados[1]): lista_de_tuplas.append(dados)
+
+    info = dict(lista_de_tuplas)
+
+    lista = list(info.keys())
+    print(lista)
+
+    try:
+        df = con.execute("SELECT DISTINCT COlUMNS(c -> c IN ?)FROM data_0 ORDER BY ALL", [lista]).df()
+    except Exception as e:
+        print(e)
+        return "Por favor selecionar ao menos um filtro para busca"
+
     resultado = df.to_dict('records')
 
-    return resultado
+    return {"dados filtrados": resultado}
 
-@app.get("/dadosfiltro")
+
+
+
+@app.get("/dadosEstacao")
 async def dados_estacao(id_estacao: Annotated[int, Query()]):
 
-    df = con.execute("SELECT data_0.*, estacao.nome, estacao.orgao_id FROM data_0 LEFT JOIN estacao ON data_0.estacao_id = estacao.id WHERE data_0.estacao_id = ?  LIMIT 10;", [id_estacao]).df()
+    df = con.execute("SELECT data_0.*, estacao.nome, estacao.orgao_id FROM data_0 LEFT JOIN estacao ON data_0.estacao_id = estacao.id WHERE data_0.estacao_id = ? ORDER BY ALL LIMIT 10;", [id_estacao]).df()
 
     resultado = df.to_dict('records')
 
@@ -98,7 +137,7 @@ async def horario(datahora: Annotated[str, Query()]):
 
 @app.get("/estacoes/{id}")
 async def funcao(id: Annotated[int, Path()]):
-    # DuckDB puro - mais rápido
+
     df = con.execute("SELECT * FROM estacao WHERE id = ?", [id]).df()
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict('records')
@@ -111,18 +150,12 @@ async def operacao(parametros: Annotated[int, Query]):
 
 @app.get("/orgaos")
 async def funcao():
-    # DuckDB puro - mais rápido
-    # resultado = con.execute("SELECT * FROM orgao").fetchall()
-    # colunas = [desc[0] for desc in con.description]
-    # dados = [dict(zip(colunas, row)) for row in resultado]
     
     df = con.execute("SELECT * FROM orgao").df()
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict('records')
 
     return dados
-
-
 
 
 @app.get("/qualidade")

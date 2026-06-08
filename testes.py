@@ -1,3 +1,10 @@
+
+
+teste: dict = {"ada": 2, "sdasd": 5}
+
+print(teste.keys())
+
+
 """
 
 try:
@@ -39,13 +46,13 @@ nome = os.getenv("MY_NAME", "mundo")
 print(f"Ola {nome}")
 """
 
-from datetime import date
+# from datetime import date
 
-dia = date.today()
+# dia = date.today()
 
-@classmethod(cls)
-@staticmethod
-@
+# @classmethod(cls)
+# @staticmethod
+# @
 
 
-print(f"dia: {dia}")
+# print(f"dia: {dia}")
