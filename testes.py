@@ -4,8 +4,36 @@ teste: dict = {"ada": 2, "sdasd": 5}
 
 print(teste.keys())
 
+@app.get("/filtroSensor")
+async def filtroSensor(filtroSensor: Annotated[str, Query()]):
+    
+
+    sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
+    
+    if(sensor.empty):
+        return "Nenhum sensor com o nome curto fornecido"
+        
+    resultado = con.execute(QUERIES["sensorDados"], [filtroSensor]).df()
+
+    resultado.replace({np.nan: None}, inplace=True)
+    
+    # resultado.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+
+    sensor = sensor.to_dict('records')
+    resultado = resultado.to_dict('records')
+
+    return {"Sensor:": sensor, "Dados obtidos": resultado}
+
+
+
 
 """
+
+-- name: sensor
+SELECT sensor.id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 
+FROM sensor LEFT JOIN unidade_medida on sensor.unidade_medida_id = unidade_medida.id
+LEFT JOIN operacao on sensor.classificacao_id = operacao.id
+WHERE sensor.nome_curto = ?;
 
 try:
     number = int(input("Enter a number: "))

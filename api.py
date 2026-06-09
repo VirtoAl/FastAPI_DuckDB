@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from fastapi import FastAPI, Path, Body, UploadFile, Query, Header
 from typing import Annotated
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AfterValidator
 from datetime import datetime
 
 def carregar_queries(caminho: str =  "queries.sql"):
@@ -72,21 +72,21 @@ con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
 class Filtro(BaseModel):
     model_config = {"extra": "forbid"}
     
-    data_hora: bool = Field(description="filtro por data e hora", default= False)
-    estacao_id: bool = Field(description="filtro por ID da estação", default= False)
-    sensor_id: bool = Field(description="filtro por ID do sensor", default= False)
-    qualidade_id: bool = Field(description="filtro por ID da qualidade", default= False)
+    data_hora: bool = Field(description="listar por data e hora", default= None)
+    estacao_id: bool = Field(description="listar por ID da estação", default= None)
+    sensor_id: bool = Field(description="listar por ID do sensor", default= None)
+    qualidade_id: bool = Field(description="listar por ID da qualidade", default= None)
 
 
 @app.get("/dadosBrutos")
-async def dados():
-    df = con.execute("SELECT id, nome FROM estacao ORDER BY id").df()
+async def estacoes():
+    df = con.execute("SELECT id, nome FROM estacao ORDER BY nome").df()
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict('records')
 
     return dados
 
-@app.get("/filtroDeDados")
+@app.get("/listaDeDados")
 async def bases_em_funcionamento(dados_filtro: Annotated[Filtro, Query(title="Base de dados em execução",description="filtro de dados")]):
 
 
@@ -104,90 +104,114 @@ async def bases_em_funcionamento(dados_filtro: Annotated[Filtro, Query(title="Ba
         df = con.execute("SELECT DISTINCT COlUMNS(c -> c IN ?)FROM data_0 ORDER BY ALL", [lista]).df()
     except Exception as e:
         print(e)
-        return "Por favor selecionar ao menos um filtro para busca"
+        return "Por favor selecionar ao menos um campo para busca"
 
     resultado = df.to_dict('records')
 
-    return {"dados filtrados": resultado}
+    return {"dados listados": resultado}
 
 
 
 
-@app.get("/dadosEstacao")
-async def dados_estacao(id_estacao: Annotated[int, Query()]):
+@app.get("/filtroEstacao")
+async def filtro_de_dados_por_estacao(id_estacao: Annotated[int | None, Query()] = None):
 
-    df = con.execute("SELECT data_0.*, estacao.nome, estacao.orgao_id FROM data_0 LEFT JOIN estacao ON data_0.estacao_id = estacao.id WHERE data_0.estacao_id = ? ORDER BY ALL LIMIT 10;", [id_estacao]).df()
 
-    resultado = df.to_dict('records')
+    if(id_estacao == None):
+        exit
+    else:
+        estacao = con.execute(QUERIES["estacao"], [id_estacao]).df()
 
-    return resultado
+        if (estacao.empty):
+            return "Nenhuma estação com o id fornecido"
+        
+
+        df = con.execute(QUERIES["estacao_dados"], [id_estacao]).df()
+
+        df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+
+        estacao = estacao.to_dict('records')
+        resultado = df.to_dict('records')
+
+        return {"Estação": estacao, "Dados obtidos": resultado}
+    
+    return "nenhum dado fornecido"
+  
 
 @app.get("/horafiltro")
 async def horario(datahora: Annotated[str, Query()]):
 
     
-
-    df = con.execute("SELECT * FROM data_0  WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 10", [datahora]).df()
-
+    try:
+        df = con.execute("SELECT * FROM data_0  WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 10", [datahora]).df()
+    except Exception as e:
+        print(e)
+        return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
 
     df = df.to_dict('records')
 
     return df
 
+# def check_sensor(id: str):
+#     if not id.startswith(()):
 
-@app.get("/estacoes/{id}")
-async def funcao(id: Annotated[int, Path()]):
 
-    df = con.execute("SELECT * FROM estacao WHERE id = ?", [id]).df()
-    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
-    dados = df.to_dict('records')
+
+@app.get("/filtroSensor")
+async def filtroSensor(filtroSensor: Annotated[str, Query()]):
     
-    return dados
+    sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()    
+    if(sensor.empty):
+        return "Nenhum sensor com o nome curto fornecido"
+        
+    resultado = con.execute(QUERIES["sensor_dados"], [filtroSensor]).df()
 
-@app.get("operacao")
-async def operacao(parametros: Annotated[int, Query]):
-    return None
-
-@app.get("/orgaos")
-async def funcao():
+    resultado.replace({np.nan: None}, inplace=True)
     
-    df = con.execute("SELECT * FROM orgao").df()
-    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
-    dados = df.to_dict('records')
+    sensor = sensor.to_dict('records')
+    resultado = resultado.to_dict('records')
 
-    return dados
+    return {"Sensor:": sensor, "Dados obtidos": resultado}
+
+@app.get("/filtros")
+async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSensor: Annotated[str | None, Query()] = None):
+    
+    df = con.execute("SELECT * FROM data_0 LIMIT 10").df()
+
+    if (filtroHorario == None):
+        exit
+    else:
+        try:
+            df = con.execute("SELECT * FROM data_0  WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 10", [filtroHorario]).df()
+        except Exception as e:
+            print(e)
+            return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
+
+    if (filtroSensor == None):
+        exit
+    else:
+        df = con.execute(QUERIES['sensor'], [filtroSensor]).df()
+
+        if(df.empty):
+            return "Nenhum sensor com o nome curto fornecido"
 
 
-@app.get("/qualidade")
-async def teste(parametros: Annotated[int, Query]):
+    result = df.to_dict('records')
 
-    return None
-
-
-@app.get("/sensor")
-async def teste(parametros: Annotated[int, Query]):
-
-    return None
-
-@app.get("/tipo_coleta")
-async def teste(parametros: Annotated[int, Query]):
-
-    return None
-
-@app.get("/tipo_estacao")
-async def teste(parametros: Annotated[int, Query]):
-
-    return None
+    return result
 
 
-@app.get("/unidade_medida")
-async def teste(parametros: Annotated[int, Query]):
 
-    df = con.execute("SELECT * FROM unidade_medida").df()
-    df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
-    dados = df.to_dict('records')
+# @app.get("/estacoes/{id}")
+# async def funcao(id: Annotated[int, Path()]):
 
-    return dados
+#     df = con.execute("SELECT * FROM estacao WHERE id = ?", [id]).df()
+#     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+#     dados = df.to_dict('records')
+    
+#     return dados
+
+
 
 
 
