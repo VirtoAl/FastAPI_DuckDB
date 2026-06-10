@@ -175,9 +175,7 @@ async def filtroSensor(filtroSensor: Annotated[str, Query()]):
 async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSensor: Annotated[str | None, Query()] = None, filtroEstacao: Annotated[int | None, Query()] = None):
     
     filtros = []
-    con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
-
-    df = con.execute(QUERIES["dados"]).df()
+    df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
 
     if (filtroHorario == None):
         exit
@@ -185,8 +183,8 @@ async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSen
         try:
             data_hora = con.execute("SELECT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 1", [filtroHorario]).df()
             if(data_hora.empty):
-                return "Nehum dado recolhido no tempo selecionado"
 
+                return "Nehum dado recolhido no tempo selecionado"
 
             data_hora.replace({np.nan: None}, inplace=True)
 
@@ -200,11 +198,14 @@ async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSen
     else:
         sensor = con.execute(QUERIES['sensor'], [filtroSensor]).df()
 
-        if(df.empty):
+        if(sensor.empty):
             return "Nenhum sensor com o nome curto fornecido"
         
+        df = con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
+
         sensor.replace({np.nan: None}, inplace=True)
         filtros += sensor.to_dict('records')
+ 
 
     if(filtroEstacao == None):
         exit
@@ -214,17 +215,15 @@ async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSen
         if (estacao.empty):
             return "Nenhuma estação com o id fornecido"
         
+        df = con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
 
-        df = con.execute(QUERIES["estacao_dados"], [filtroEstacao]).df()
-        # df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
         estacao.replace({np.nan: None}, inplace=True)
-
-
         filtros += estacao.to_dict('records')
         # resultado = df.to_dict('records')
 
-
+    df = con.execute(QUERIES["dados"]).df()
     df.replace({np.nan: None}, inplace=True)
+
 
     result = df.to_dict('records')
 
