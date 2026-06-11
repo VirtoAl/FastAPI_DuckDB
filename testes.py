@@ -4,6 +4,7 @@ teste: dict = {"ada": 2, "sdasd": 5}
 
 print(teste.keys())
 
+"""
 @app.get("/filtroSensor")
 async def filtroSensor(filtroSensor: Annotated[str, Query()]):
     
@@ -27,7 +28,17 @@ async def filtroSensor(filtroSensor: Annotated[str, Query()]):
 
 
 
-"""
+
+# cur_time = time.time()
+# print(f"Tempo antes: {time.time() - cur_time}")
+
+
+# print(f"Tempo para criar tabela: {(time.time() - cur_time)} segundos")
+
+# meu_timestamp = datetime.now().timestamp()
+
+# df = con.execute("SELECT data_hora FROM data_0 WHERE data_hora = '2026-06-05 T12:11:00-03:00' LIMIT 10").df()
+# print(df)
 
 -- name: sensor
 SELECT sensor.id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 

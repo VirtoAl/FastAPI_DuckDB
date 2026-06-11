@@ -84,7 +84,7 @@ async def email(email: Annotated[UserPass, Body()]) -> UserIn:
 '''
 @app.post("/email", response_model=UserOut)
 async def email(email: Annotated[UserIn, Body()]) -> any:
-    return email
+ return email
 '''
 
 

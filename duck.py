@@ -3,7 +3,7 @@ import pandas as pd
 import glob
 import time
 
-def carregar_queries(caminho: str =  "queries.sql"):
+def carregar_queries(caminho: str =  "queries_teste.sql"):
     queries: dict = {}
     nome_atual: None = None
     linhas_comando: list = []

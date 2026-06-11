@@ -55,19 +55,7 @@ con.execute("CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parqu
 
 con.execute("CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('reatividadedeestgioduckdb/unidade_medida.parquet');")
 
-# cur_time = time.time()
-# print(f"Tempo antes: {time.time() - cur_time}")
-
-
-# print(f"Tempo para criar tabela: {(time.time() - cur_time)} segundos")
-
-# meu_timestamp = datetime.now().timestamp()
-
-# df = con.execute("SELECT data_hora FROM data_0 WHERE data_hora = '2026-06-05 T12:11:00-03:00' LIMIT 10").df()
-# print(df)
-
-
-con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
+#con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
 
 class Filtro(BaseModel):
     model_config = {"extra": "forbid"}
@@ -76,6 +64,65 @@ class Filtro(BaseModel):
     estacao_id: bool = Field(description="listar por ID da estação", default= None)
     sensor_id: bool = Field(description="listar por ID do sensor", default= None)
     qualidade_id: bool = Field(description="listar por ID da qualidade", default= None)
+
+@app.get("/filtros")
+async def filtro_de_dados_geral(filtroHorario: Annotated[str | None, Query()] = None,filtroSensor: Annotated[str | None, Query()] = None, filtroEstacao: Annotated[int | None, Query()] = None):
+    
+    filtros = []
+    df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
+
+    if (filtroHorario == None):
+        exit
+    else:
+        try:
+            data_hora = con.execute("SELECT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 1", [filtroHorario]).df()
+            if(data_hora.empty):
+
+                return "Nehum dado recolhido no tempo selecionado"
+
+            data_hora.replace({np.nan: None}, inplace=True)
+
+            filtros += data_hora.to_dict('records')
+        except Exception as e:
+            print(e)
+            return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
+
+    if (filtroSensor == None):
+        exit
+    else:
+        sensor = con.execute(QUERIES['sensor'], [filtroSensor]).df()
+
+        if(sensor.empty):
+            return "Nenhum sensor com o nome curto fornecido"
+        
+        df = con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
+
+        sensor.replace({np.nan: None}, inplace=True)
+        filtros += sensor.to_dict('records')
+ 
+
+    if(filtroEstacao == None):
+        exit
+    else:
+        estacao = con.execute(QUERIES["estacao"], [filtroEstacao]).df()
+
+        if (estacao.empty):
+            return "Nenhuma estação com o id fornecido"
+        
+        df = con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
+
+        estacao.replace({np.nan: None}, inplace=True)
+        filtros += estacao.to_dict('records')
+        # resultado = df.to_dict('records')
+
+    df = con.execute(QUERIES["dados"]).df()
+    df.replace({np.nan: None}, inplace=True)
+
+
+    result = df.to_dict('records')
+
+    return {"filtros:": filtros, "dados": result} if filtros != None else {"dados": result}
+
 
 
 @app.get("/dadosBrutos")
@@ -140,8 +187,8 @@ async def filtro_de_dados_por_estacao(id_estacao: Annotated[int | None, Query()]
     return "nenhum dado fornecido"
   
 
-@app.get("/horafiltro")
-async def horario(datahora: Annotated[str, Query()]):
+@app.get("/filtroHora")
+async def filtro_de_dados_por_horario(datahora: Annotated[str, Query()]):
 
     
     try:
@@ -156,7 +203,7 @@ async def horario(datahora: Annotated[str, Query()]):
 
 
 @app.get("/filtroSensor")
-async def filtroSensor(filtroSensor: Annotated[str, Query()]):
+async def filtro_de_dados_por_sensor(filtroSensor: Annotated[str, Query()]):
     
     sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()    
     if(sensor.empty):
@@ -171,63 +218,6 @@ async def filtroSensor(filtroSensor: Annotated[str, Query()]):
 
     return {"Sensor:": sensor, "Dados obtidos": resultado}
 
-@app.get("/filtros")
-async def filtros(filtroHorario: Annotated[str | None, Query()] = None,filtroSensor: Annotated[str | None, Query()] = None, filtroEstacao: Annotated[int | None, Query()] = None):
-    
-    filtros = []
-    df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
-
-    if (filtroHorario == None):
-        exit
-    else:
-        try:
-            data_hora = con.execute("SELECT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 1", [filtroHorario]).df()
-            if(data_hora.empty):
-
-                return "Nehum dado recolhido no tempo selecionado"
-
-            data_hora.replace({np.nan: None}, inplace=True)
-
-            filtros += data_hora.to_dict('records')
-        except Exception as e:
-            print(e)
-            return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
-
-    if (filtroSensor == None):
-        exit
-    else:
-        sensor = con.execute(QUERIES['sensor'], [filtroSensor]).df()
-
-        if(sensor.empty):
-            return "Nenhum sensor com o nome curto fornecido"
-        
-        df = con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
-
-        sensor.replace({np.nan: None}, inplace=True)
-        filtros += sensor.to_dict('records')
- 
-
-    if(filtroEstacao == None):
-        exit
-    else:
-        estacao = con.execute(QUERIES["estacao"], [filtroEstacao]).df()
-
-        if (estacao.empty):
-            return "Nenhuma estação com o id fornecido"
-        
-        df = con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
-
-        estacao.replace({np.nan: None}, inplace=True)
-        filtros += estacao.to_dict('records')
-        # resultado = df.to_dict('records')
-
-    df = con.execute(QUERIES["dados"]).df()
-    df.replace({np.nan: None}, inplace=True)
-
-
-    result = df.to_dict('records')
-
-    return {"filtros:": filtros, "dados": result} if filtros != None else {"dados": result}
 
 
 
