@@ -38,8 +38,12 @@ SELECT dados.data_hora, estacao.id as estacao_id, estacao.nome as estacao_nome, 
 FROM dados LEFT JOIN estacao on dados.estacao_id = estacao.id
 LEFT JOIN sensor on dados.sensor_id = sensor.id
 LEFT JOIN unidade_medida on sensor.unidade_medida_id = unidade_medida.id
-LEFT JOIN qualidade on dados.qualidade_id = qualidade.id;
+LEFT JOIN qualidade on dados.qualidade_id = qualidade.id
+ORDER BY data_hora;
 
 -- name: sensor_dados_filtro
 DELETE FROM dados USING sensor 
 WHERE dados.sensor_id = sensor.id AND sensor.nome_curto != ?;  
+
+-- name: hora
+SELECT data_hora FROM dados WHERE data_hora::TIMETZ >= ?::TIMETZ AND data_hora::TIMETZ <= ? LIMIT 1;

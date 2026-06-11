@@ -97,10 +97,14 @@ async def filtro_de_dados_geral(
         exit
     else:
         try:
-            data_hora = con.execute(
-                "SELECT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 1",
-                [filtroHorario],
-            ).df()
+            intervalo = filtroHorario.split("-")
+
+            filtroHorario1 = intervalo[0]
+            filtroHorario2 = intervalo[1]
+
+            print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
+
+            data_hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
             if data_hora.empty:
                 return "Nehum dado recolhido no tempo selecionado"
 
@@ -109,7 +113,7 @@ async def filtro_de_dados_geral(
             filtros += data_hora.to_dict("records")
         except Exception as e:
             print(e)
-            return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
+            return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |" 
 
     if filtroSensor is None:
         exit
