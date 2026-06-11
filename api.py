@@ -104,13 +104,19 @@ async def filtro_de_dados_geral(
 
             print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
 
-            data_hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
-            if data_hora.empty:
-                return "Nehum dado recolhido no tempo selecionado"
+            
 
-            data_hora.replace({np.nan: None}, inplace=True)
+            # data_hora = con.execute(QUERIES")
 
-            filtros += data_hora.to_dict("records")
+            # if data_hora.empty:
+            #     return "Nehum dado recolhido no tempo selecionado"
+
+            # data_hora.replace({np.nan: None}, inplace=True)
+            df = con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
+   
+            print(df)
+
+            # filtros += data_hora.to_dict("records")
         except Exception as e:
             print(e)
             return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |" 
@@ -125,6 +131,11 @@ async def filtro_de_dados_geral(
 
         df = con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
 
+
+        print(df)
+        # df = con.execute("SELECT * EXCLUDE (sensor_id) FROM dados").df()
+   
+
         sensor.replace({np.nan: None}, inplace=True)
         filtros += sensor.to_dict("records")
 
@@ -138,11 +149,18 @@ async def filtro_de_dados_geral(
 
         df = con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
 
+        print(df)
+
         estacao.replace({np.nan: None}, inplace=True)
         filtros += estacao.to_dict("records")
         # resultado = df.to_dict('records')
 
+   
+
     df = con.execute(QUERIES["dados"]).df()
+
+    print(df)
+
     df.replace({np.nan: None}, inplace=True)
 
     result = df.to_dict("records")

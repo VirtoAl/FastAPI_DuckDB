@@ -14,8 +14,7 @@ LEFT JOIN unidade_medida ON sensor.unidade_medida_id = unidade_medida.id
 WHERE estacao_id = ?;
 
 -- name: estacao_dados_filtro
-DELETE FROM dados USING estacao 
-WHERE dados.estacao_id = estacao.id AND estacao.id != ?; 
+DELETE FROM dados WHERE dados.estacao_id != ?; 
 
 -- name: sensor
 SELECT sensor.id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 
@@ -45,5 +44,7 @@ ORDER BY data_hora;
 DELETE FROM dados USING sensor 
 WHERE dados.sensor_id = sensor.id AND sensor.nome_curto != ?;  
 
--- name: hora
-SELECT data_hora FROM dados WHERE data_hora::TIMETZ >= ?::TIMETZ AND data_hora::TIMETZ <= ? LIMIT 1;
+-- name: hora_dados_filtro
+DELETE FROM dados 
+WHERE data_hora::TIMETZ < ?::TIMETZ OR data_hora::TIMETZ > ?::TIMETZ;
+

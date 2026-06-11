@@ -1,7 +1,13 @@
+for date import date
+
 teste: dict = {"ada": 2, "sdasd": 5}
 
 print(teste.keys())
 
+
+tempo: date.time()
+
+x = tempo
 
 
 """
