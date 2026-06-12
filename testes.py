@@ -9,6 +9,7 @@ tempo: date.time()
 
 x = tempo
 
+dsf = con.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'dados'").df()
 
 """
 @app.get("/filtroSensor")

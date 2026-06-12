@@ -90,8 +90,13 @@ async def filtro_de_dados_geral(
     filtroEstacao: Annotated[int | None, Query()] = None,
 ):
 
+
     filtros = []
+
+
     df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
+
+    
 
     if filtroHorario is None:
         exit
@@ -105,18 +110,11 @@ async def filtro_de_dados_geral(
             print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
 
             
+            con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
+            
+            hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
 
-            # data_hora = con.execute(QUERIES")
-
-            # if data_hora.empty:
-            #     return "Nehum dado recolhido no tempo selecionado"
-
-            # data_hora.replace({np.nan: None}, inplace=True)
-            df = con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
-   
-            print(df)
-
-            # filtros += data_hora.to_dict("records")
+            filtros += [{"data_hora": intervalo}]
         except Exception as e:
             print(e)
             return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |" 
@@ -124,17 +122,13 @@ async def filtro_de_dados_geral(
     if filtroSensor is None:
         exit
     else:
+
         sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
 
         if sensor.empty:
             return "Nenhum sensor com o nome curto fornecido"
 
-        df = con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
-
-
-        print(df)
-        # df = con.execute("SELECT * EXCLUDE (sensor_id) FROM dados").df()
-   
+        con.execute(QUERIES["sensor_dados_filtro"], [filtroSensor]).df()
 
         sensor.replace({np.nan: None}, inplace=True)
         filtros += sensor.to_dict("records")
@@ -147,23 +141,22 @@ async def filtro_de_dados_geral(
         if estacao.empty:
             return "Nenhuma estação com o id fornecido"
 
-        df = con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
-
-        print(df)
+        con.execute(QUERIES["estacao_dados_filtro"], [filtroEstacao]).df()
 
         estacao.replace({np.nan: None}, inplace=True)
         filtros += estacao.to_dict("records")
-        # resultado = df.to_dict('records')
 
-   
+    tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
-    df = con.execute(QUERIES["dados"]).df()
+    lista_chaves = set().union(*filtros)
+    colunas = ", ".join(lista_chaves)
 
-    print(df)
+    tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro LIMIT 50").df()
 
-    df.replace({np.nan: None}, inplace=True)
 
-    result = df.to_dict("records")
+    tabelaAux.replace({np.nan: None}, inplace=True)
+
+    result = tabelaAux.to_dict("records")
 
     return (
         {"filtros:": filtros, "dados": result} if filtros is not None else {"dados": result}
