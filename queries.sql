@@ -62,7 +62,7 @@ DELETE FROM dados
 WHERE data_hora::TIMETZ < ?::TIMETZ OR data_hora::TIMETZ > ?::TIMETZ;
 
 -- name: hora
-SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ OR data_hora::TIMETZ = ?::TIMETZ;
+SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ?;
 
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;

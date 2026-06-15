@@ -85,9 +85,9 @@ class Filtro(BaseModel):
 
 @app.get("/filtros")
 async def filtro_de_dados_geral(
-    filtroHorario: Annotated[str | None, Query()] = None,
-    filtroSensor: Annotated[str | None, Query()] = None,
-    filtroEstacao: Annotated[int | None, Query()] = None,
+    filtroHorario: Annotated[str | None, Query(description="Exemplo de entrada válida: 07:40-08:30")] = None,
+    filtroSensor: Annotated[str | None, Query(description="Exemplo de entrada válida: tmax")] = None,
+    filtroEstacao: Annotated[int | None, Query(description="Exemplo de entrada válida: 25424926")] = None,
 ):
 
 
@@ -112,7 +112,9 @@ async def filtro_de_dados_geral(
             
             con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
             
-            hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
+            hora1 = con.execute(QUERIES["hora"], [filtroHorario1]).df()
+            hora2 = con.execute(QUERIES["hora"], [filtroHorario2]).df()
+            
 
             filtros += [{"data_hora": intervalo}]
         except Exception as e:
@@ -151,7 +153,7 @@ async def filtro_de_dados_geral(
     lista_chaves = set().union(*filtros)
     colunas = ", ".join(lista_chaves)
 
-    tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro LIMIT 50").df()
+    tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro").df()
 
 
     tabelaAux.replace({np.nan: None}, inplace=True)
