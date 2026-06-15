@@ -102,20 +102,23 @@ async def filtro_de_dados_geral(
         exit
     else:
         try:
+
+            
+
             intervalo = filtroHorario.split("-")
 
             filtroHorario1 = intervalo[0]
             filtroHorario2 = intervalo[1]
+            hora = con.execute(QUERIES["hora"], [filtroHorario1]).df()
+            hora = con.execute(QUERIES["hora"], [filtroHorario2]).df()
 
             print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
 
             
             con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
             
-            hora1 = con.execute(QUERIES["hora"], [filtroHorario1]).df()
-            hora2 = con.execute(QUERIES["hora"], [filtroHorario2]).df()
-            
-
+   
+            hora.replace({np.nan: None}, inplace=True)
             filtros += [{"data_hora": intervalo}]
         except Exception as e:
             print(e)
@@ -151,6 +154,7 @@ async def filtro_de_dados_geral(
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
     lista_chaves = set().union(*filtros)
+    lista_chaves.discard("data_hora")
     colunas = ", ".join(lista_chaves)
 
     tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro").df()
