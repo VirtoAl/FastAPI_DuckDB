@@ -93,10 +93,12 @@ async def filtro_de_dados_geral(
 
     filtros = []
 
+    #con.execute("CREATE TABLE IF NOT EXISTS tabelaFiltro (estacao_id INTEGER)")
+    con.execute(QUERIES["tabelaFiltro"]).df()
 
-    df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
+    df = con.execute("SELECT * FROM tabelaFiltro").df()
 
-    
+    print(df)
 
     if filtroHorario is None:
         exit
@@ -110,9 +112,11 @@ async def filtro_de_dados_geral(
             print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
 
             
-            con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
+            df = con.execute(QUERIES["hora_dados_filtro"],[filtroHorario1, filtroHorario2]).df()
+            df = con.execute("SELECT * FROM tabelaFiltro").df()
             
-            hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
+            print(df)
+            #hora = con.execute(QUERIES["hora"], [filtroHorario1, filtroHorario2]).df()
 
             filtros += [{"data_hora": intervalo}]
         except Exception as e:

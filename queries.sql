@@ -58,8 +58,9 @@ DELETE FROM dados USING sensor
 WHERE dados.sensor_id = sensor.id AND sensor.nome_curto != ?;  
 
 -- name: hora_dados_filtro
-DELETE FROM dados 
-WHERE data_hora::TIMETZ < ?::TIMETZ OR data_hora::TIMETZ > ?::TIMETZ;
+
+INSERT INTO tabelaFiltro (estacao_id) SELECT estacao_id FROM data_0
+WHERE data_0.data_hora::TIMETZ >= ?::TIMETZ AND data_0.data_hora::TIMETZ <= ?::TIMETZ;
 
 -- name: hora
 SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ OR data_hora::TIMETZ = ?::TIMETZ;
@@ -67,3 +68,15 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ?::TIMETZ OR data
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;
 
+-- name: tabelaFiltro
+CREATE OR REPLACE TABLE tabelaFiltro as (
+SELECT data_0.data_hora, estacao.id as estacao_id, estacao.nome, estacao.latitude, estacao.longitude, estacao.altitude, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, data_0.valor, qualidade.descricao as nivel_qualidade,estacao.classificacao, estacao.inicio_operacao, estacao.fim_operacao, sensor.id as sensor_id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 
+FROM data_0 LEFT JOIN estacao on data_0.estacao_id = estacao.id
+LEFT JOIN orgao on orgao.id = estacao.orgao_id
+LEFT JOIN tipo_estacao on estacao.tipo_estacao_id = tipo_estacao.id 
+LEFT JOIN tipo_coleta on estacao.tipo_coleta_id = tipo_coleta.id  
+LEFT JOIN sensor on data_0.sensor_id = sensor.id
+LEFT JOIN unidade_medida on sensor.unidade_medida_id = unidade_medida.id
+LEFT JOIN operacao on sensor.classificacao_id = operacao.id
+LEFT JOIN qualidade on data_0.qualidade_id = qualidade.id
+WHERE FALSE);
