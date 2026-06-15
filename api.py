@@ -85,26 +85,25 @@ class Filtro(BaseModel):
 
 @app.get("/filtros")
 async def filtro_de_dados_geral(
-    filtroHorario: Annotated[str | None, Query(description="Exemplo de entrada válida: 07:40-08:30")] = None,
-    filtroSensor: Annotated[str | None, Query(description="Exemplo de entrada válida: tmax")] = None,
-    filtroEstacao: Annotated[int | None, Query(description="Exemplo de entrada válida: 25424926")] = None,
+    filtroHorario: Annotated[
+        str | None, Query(description="Exemplo de entrada válida: 07:40-08:30")
+    ] = None,
+    filtroSensor: Annotated[
+        str | None, Query(description="Exemplo de entrada válida: tmax")
+    ] = None,
+    filtroEstacao: Annotated[
+        int | None, Query(description="Exemplo de entrada válida: 25424926")
+    ] = None,
 ):
-
 
     filtros = []
 
-
-    df = con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
-
-    
+    con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
 
     if filtroHorario is None:
         exit
     else:
         try:
-
-            
-
             intervalo = filtroHorario.split("-")
 
             filtroHorario1 = intervalo[0]
@@ -112,22 +111,21 @@ async def filtro_de_dados_geral(
             hora = con.execute(QUERIES["hora"], [filtroHorario1]).df()
             hora = con.execute(QUERIES["hora"], [filtroHorario2]).df()
 
-            print(f'{intervalo} {filtroHorario1} {filtroHorario2}')
+            print(f"{intervalo} {filtroHorario1} {filtroHorario2}")
 
-            
-            con.execute(QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]).df()
-            
-   
+            con.execute(
+                QUERIES["hora_dados_filtro"], [filtroHorario1, filtroHorario2]
+            ).df()
+
             hora.replace({np.nan: None}, inplace=True)
             filtros += [{"data_hora": intervalo}]
         except Exception as e:
             print(e)
-            return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |" 
+            return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |"
 
     if filtroSensor is None:
         exit
     else:
-
         sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
 
         if sensor.empty:
@@ -159,13 +157,14 @@ async def filtro_de_dados_geral(
 
     tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro").df()
 
-
     tabelaAux.replace({np.nan: None}, inplace=True)
 
     result = tabelaAux.to_dict("records")
 
     return (
-        {"filtros:": filtros, "dados": result} if filtros is not None else {"dados": result}
+        {"filtros:": filtros, "dados": result}
+        if filtros is not None
+        else {"dados": result}
     )
 
 

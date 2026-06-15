@@ -1,15 +1,15 @@
-for date import date
+#from date import date
 
 teste: dict = {"ada": 2, "sdasd": 5}
 
 print(teste.keys())
 
 
-tempo: date.time()
+#tempo: date.time()
 
-x = tempo
+#x = tempo
 
-dsf = con.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'dados'").df()
+#dsf = con.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'dados'").df()
 
 """
 @app.get("/filtroSensor")
