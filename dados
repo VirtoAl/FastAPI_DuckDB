@@ -1,6 +1,0 @@
-data_hora,estacao_nome,sensor_descricao,valor,unidade_de_medida,qualidade
-2026-06-01 17:30:00-03,Alto Sucuriú Barragem,Precipitação Acumulada Total,48.0,mm,Dado não verificado
-2026-06-01 17:30:00-03,Fernandópolis,Precipitação Acumulada Total,88.0,mm,Dado não verificado
-2026-06-01 17:30:00-03,Urupes,Precipitação Acumulada Total,25.0,mm,Dado não verificado
-2026-06-01 17:30:00-03,Itápolis,Precipitação Acumulada Total,42.8,mm,Dado não verificado
-2026-06-01 17:30:00-03,Alto Sucuriú Barragem,Nível,457.931,m,Dado não verificado

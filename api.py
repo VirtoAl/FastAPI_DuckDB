@@ -151,11 +151,21 @@ async def filtro_de_dados_geral(
 
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
+    dfColunas = con.execute(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'dadosFiltro'"
+    ).df()
+    colunas_permitidas = set(dfColunas["column_name"])
     lista_chaves = set().union(*filtros)
     lista_chaves.discard("data_hora")
-    colunas = ", ".join(lista_chaves)
 
-    tabelaAux = con.execute(f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro").df()
+    chaves_validadas = lista_chaves & colunas_permitidas
+
+    chaves = colunas_permitidas - chaves_validadas
+
+    colunas = ", ".join(chaves)
+
+    QUERIES["tabela_final"] = f"SELECT {colunas} FROM dadosFiltro"
+    tabelaAux = con.execute(QUERIES["tabela_final"]).df()
 
     tabelaAux.replace({np.nan: None}, inplace=True)
 

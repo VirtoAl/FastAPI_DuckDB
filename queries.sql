@@ -67,3 +67,5 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;
 
+-- name: tabela_final
+f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro";
