@@ -1,4 +1,5 @@
 import duckdb
+import time
 import numpy as np
 from fastapi import FastAPI, Query
 from typing import Annotated
@@ -96,9 +97,14 @@ async def filtro_de_dados_geral(
     ] = None,
 ):
 
+    cur_time = time.time()
+
+
     filtros = []
 
     con.execute("CREATE OR REPLACE TABLE dados as SELECT * FROM data_0;")
+
+    print(f"tempo inicial: {(time.time() - cur_time)}")
 
     if filtroHorario is None:
         exit
@@ -149,27 +155,28 @@ async def filtro_de_dados_geral(
         estacao.replace({np.nan: None}, inplace=True)
         filtros += estacao.to_dict("records")
 
+    
+
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
-    dfColunas = con.execute(
-        "SELECT column_name FROM information_schema.columns WHERE table_name = 'dadosFiltro'"
-    ).df()
+    dfColunas = con.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'dadosFiltro'").df()
     colunas_permitidas = set(dfColunas["column_name"])
     lista_chaves = set().union(*filtros)
     lista_chaves.discard("data_hora")
 
     chaves_validadas = lista_chaves & colunas_permitidas
 
-    chaves = colunas_permitidas - chaves_validadas
+    colunas = ", ".join(chaves_validadas)
 
-    colunas = ", ".join(chaves)
-
-    QUERIES["tabela_final"] = f"SELECT {colunas} FROM dadosFiltro"
+    QUERIES["tabela_final"] = f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro"
     tabelaAux = con.execute(QUERIES["tabela_final"]).df()
-
+    
+    #abelaAux = con.execute(teste).df()
     tabelaAux.replace({np.nan: None}, inplace=True)
 
     result = tabelaAux.to_dict("records")
+
+    print(f"tempo final: {(time.time() - cur_time)}")
 
     return (
         {"filtros:": filtros, "dados": result}
