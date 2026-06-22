@@ -5,33 +5,37 @@ from services.user import id
 from typing import Annotated
 
 
-mcp = FastMCP("Meu servidor de teste")
-service = id()
+mcp = FastMCP("meu-servidor")
+# service = id()
 
-@mcp.tool
-def summarize(content: str) -> str:
-    return content[:50]
+# @mcp.tool
+# def summarize(content: str) -> str:
+#     return content[:50]
 
 @mcp.tool
 def bom_dia(nome: str) -> str:
     """
     Retorna uma mensagem de bom dia pro usuário
     """
-    return f"Bom dia {nome}!"
-@mcp.tool(name="pratogit ")
+    return f"Bom dia {nome} ó grandioso lider que sabe tudo de computação!"
+
+@mcp.tool(name="pratogit")
 def soma(x: int, y: int) -> int:
     """
     Retorna a soma de dois números
     """
     return x+y
 
-@mcp.tool
-def id(id: int):
-    """
-    Retorna o id
-    """
-    return service.retorna_id(id)
+# @mcp.tool
+# def id(id: int):
+#     """
+#     Retorna o id
+#     """
+#     return service.retorna_id(id)
 
+if __name__ == "__main__":
+    mcp.run()
+    # mcp.run(transport="http", host="0.0.0.0", port=8000)
 
 # @mcp.tool()
 # async def rimar(nome: str, ctx: Context) -> str:

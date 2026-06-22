@@ -14,7 +14,7 @@ async def main():
         print(resultado)
 
         resultado = await client.call_tool(
-            "prato",
+            "pratogit",
             {"x": 4, "y": 12}
         )
 
