@@ -160,8 +160,6 @@ async def filtro_de_dados_geral(
     chaves_validadas = lista_chaves & colunas_permitidas
 
     colunas = ", ".join(chaves_validadas)
-    if colunas is None:
-        return "nenhum filtro selecionado"
     QUERIES["tabela_final"] = f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro"
     tabelaAux = con.execute(QUERIES["tabela_final"]).df()
     
@@ -278,7 +276,6 @@ async def filtro_de_dados_por_sensor(filtroSensor: Annotated[str, Query()]):
 
     return {"Sensor:": sensor, "Dados obtidos": resultado}
 
-# Configure MCP server
 mcp = FastApiMCP(
     app,
     name="Minha API com DuckDB",

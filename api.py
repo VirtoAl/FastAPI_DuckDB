@@ -106,9 +106,7 @@ async def filtro_de_dados_geral(
 
     print(f"tempo inicial: {(time.time() - cur_time)}")
 
-    if filtroHorario is None:
-        exit
-    else:
+    if filtroHorario is not None:
         try:
             intervalo = filtroHorario.split("-")
 
@@ -128,10 +126,7 @@ async def filtro_de_dados_geral(
         except Exception as e:
             print(e)
             return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |"
-
-    if filtroSensor is None:
-        exit
-    else:
+    if filtroSensor is not None:
         sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
 
         if sensor.empty:
@@ -142,9 +137,7 @@ async def filtro_de_dados_geral(
         sensor.replace({np.nan: None}, inplace=True)
         filtros += sensor.to_dict("records")
 
-    if filtroEstacao is None:
-        exit
-    else:
+    if filtroEstacao is not None:
         estacao = con.execute(QUERIES["estacao"], [filtroEstacao]).df()
 
         if estacao.empty:
@@ -154,8 +147,11 @@ async def filtro_de_dados_geral(
 
         estacao.replace({np.nan: None}, inplace=True)
         filtros += estacao.to_dict("records")
-
-    
+    print("barara")
+    print(filtros)
+    if filtros is None:
+        print("lerolero")
+        return "utilize ao menos um filtro"
 
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
@@ -191,7 +187,7 @@ async def estacoes():
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict("records")
 
-    return dados
+    return {"dados": dados}
 
 
 @app.get("/listaDeDados")
