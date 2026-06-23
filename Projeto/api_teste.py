@@ -185,7 +185,7 @@ async def estacoes():
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict("records")
 
-    return dados
+    return {"estações": dados}
 
 
 @app.get("/listaDeDados")
