@@ -1,5 +1,0 @@
-[
-  {"titulo": "Post 1", "conteudo": "Conteúdo 1", "publicado": true, "nota": 5},
-  {"titulo": "Post 2", "conteudo": "Conteúdo 2", "publicado": false, "nota": 3},
-  {"titulo": "Post 3", "conteudo": "Conteúdo 3", "publicado": true, "nota": 4}
-]
