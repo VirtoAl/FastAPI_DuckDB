@@ -147,10 +147,8 @@ async def filtro_de_dados_geral(
 
         estacao.replace({np.nan: None}, inplace=True)
         filtros += estacao.to_dict("records")
-    print("barara")
     print(filtros)
     if filtros is None:
-        print("lerolero")
         return "utilize ao menos um filtro"
 
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
@@ -196,17 +194,8 @@ async def bases_em_funcionamento(
         Filtro, Query(title="Base de dados em execução", description="filtro de dados")
     ],
 ):
-
-    lista_de_tuplas: list = []
-
-    for dados in dados_filtro:
-        if dados[1]:
-            lista_de_tuplas.append(dados)
-
-    info = dict(lista_de_tuplas)
-
-    lista = list(info.keys())
-    print(lista)
+    
+    lista = [dados[0] for dados in dados_filtro if dados[1]]
 
     try:
         df = con.execute(

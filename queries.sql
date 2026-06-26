@@ -20,7 +20,7 @@ DELETE FROM dados WHERE dados.estacao_id != ?;
 SELECT sensor.id as sensor_id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 
 FROM sensor LEFT JOIN unidade_medida on sensor.unidade_medida_id = unidade_medida.id
 LEFT JOIN operacao on sensor.classificacao_id = operacao.id
-WHERE nome_curto = ?;
+WHERE sensor.descricao = ? OR sensor.nome_curto = ?;
 
 -- name: sensor_dados
 SELECT data_0.data_hora, estacao.nome as estacao_nome, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, data_0.valor, qualidade.descricao as nivel_qualidade
