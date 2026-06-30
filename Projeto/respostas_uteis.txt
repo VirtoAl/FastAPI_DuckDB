@@ -1,0 +1,51 @@
+from typing import Optional
+from fastapi import FastAPI, Query
+from fastmcp import FastMCP
+
+# 1. Crie sua aplicação FastAPI padrão
+app = FastAPI(title="API de Dados da Empresa")
+
+# Exemplo de endpoint FastAPI que filtra dados do banco
+@app.get("/clientes/filtrar")
+def filtrar_clientes(
+    status: Optional[str] = Query(None, description="Status do cliente: ativo ou inativo"),
+    regiao: Optional[str] = Query(None, description="Região do cliente (ex: SP, RJ, Sul)"),
+    limite: int = Query(50, description="Limite máximo de registros a retornar")
+):
+    """
+    Busca e filtra clientes no banco de dados com base no status e região.
+    """
+    # Aqui entraria sua lógica de banco de dados (SQLAlchemy, SQL bruto, etc.)
+    # Exemplo de mock de retorno:
+    dados_mock = [
+        {"id": 1, "nome": "Empresa A", "status": "ativo", "regiao": "SP"},
+        {"id": 2, "nome": "Empresa B", "status": "inativo", "regiao": "RJ"}
+    ]
+    
+    # Executa a filtragem...
+    resultado = [
+        c for c in dados_mock 
+        if (not status or c["status"] == status) and (not regiao or c["regiao"] == regiao)
+    ]
+    return resultado[:limite]
+
+# 2. Gere o servidor MCP AUTOMATICAMENTE a partir do FastAPI
+# O FastMCP lerá o schema do OpenAPI e criará as ferramentas de IA sozinhos!
+mcp = FastMCP.from_fastapi(app=app, name="Gerenciador de Banco de Dados")
+
+# 3. Crie a sub-aplicação ASGI do MCP na rota '/mcp'
+mcp_app = mcp.http_app(path="/mcp")
+
+# 4. Una as rotas e o ciclo de vida (Lifespan) em um único servidor executável
+api_unificada = FastAPI(
+    title="API Principal + Gateway MCP",
+    routes=[
+        *app.routes,       # Suas rotas HTTP normais (/clientes/filtrar)
+        *mcp_app.routes,   # As rotas SSE/HTTP do protocolo MCP (/mcp)
+    ],
+    lifespan=mcp_app.lifespan,
+)
+
+sql basics -> IN statement
+
+ST_Contains
