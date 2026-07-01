@@ -35,7 +35,7 @@ def soma(x: int, y: int) -> int:
 
 if __name__ == "__main__":
     mcp.run()
-    # mcp.run(transport="http", host="0.0.0.0", port=8000)
+    # mcp.run(transport="http", host="0.0.0.0", port=8001)
 
 # @mcp.tool()
 # async def rimar(nome: str, ctx: Context) -> str:
