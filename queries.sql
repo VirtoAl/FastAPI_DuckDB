@@ -67,3 +67,10 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;
 
+-- name: area_raios
+SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, ST_AsWKB(areaDesconhecida.the_elipsegeom) as geometry
+FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;
+
+-- name: pontos_estacoes
+SELECT estacao.id, estacao.nome, ST_AsWKB(ST_Point(estacao.longitude,estacao.latitude)) as geometry
+FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;

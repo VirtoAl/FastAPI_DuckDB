@@ -15,13 +15,17 @@ con.sql("LOAD spatial")
 tempo = time.time()
 print(f"tempo inicial: {(time.time() - tempo)}")
 
-arquivoBlob = ("mapaBlob.html")
-arquivoDftoGeo = ("mapaDf.html")
-arquivotoGeojson = ("mapaGeoJson.html")
-arquivoParquet = ("mapaParquet.html")
+arquivoBlob = "mapaBlob.html"
+arquivoDftoGeo = "mapaDf.html"
+arquivotoGeojson = "mapaGeoJson.html"
+arquivoParquet = "mapaParquet.html"
 
-con.execute("CREATE OR REPLACE TABLE areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/mes=01/dia=01/*.parquet')")
-con.execute("CREATE TABLE IF NOT EXISTS estacao as (SELECT * FROM read_parquet('../reatividadedeestgioduckdb/estacao.parquet'))")
+con.execute(
+    "CREATE OR REPLACE TABLE areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/mes=01/*/*.parquet')"
+)
+con.execute(
+    "CREATE TABLE IF NOT EXISTS estacao as (SELECT * FROM read_parquet('../reatividadedeestgioduckdb/estacao.parquet'))"
+)
 
 
 con.sql("SELECT count(*) FROM areaDesconhecida").show()
@@ -31,13 +35,11 @@ con.sql("SELECT DISTINCT ST_CRS(the_elipsegeom) FROM areaDesconhecida").show()
 # df = con.sql("SELECT the_elipsegeom FROM areaDesconhecida LIMIT 1").df()
 
 
-
 # ----------------------------------------------------------------------------------------------------------------------
 
 # # Método lendo diretamente o arquivo .parquet, velocidade média, porém se limita a apenas um arquivo
 
 # caminho_url = '/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/mes=01/dia=01/0bc743a0-5fce-45c0-afb2-b2476d9f287c.parquet'
-
 
 
 # # gdf = leafmap.parquet_to_gdf(caminho_url, geometry = 'the_elipsegeom', columns=["time_tick", "lat", "lon"])
@@ -89,18 +91,28 @@ con.sql("SELECT DISTINCT ST_CRS(the_elipsegeom) FROM areaDesconhecida").show()
 
 # Método mais rápido utilizando blob como elemento de parâmetro
 
-# arrow_table = con.sql("SELECT time_tick, lon, lat, ST_AsWKB(ST_Collect([the_elipsegeom,the_centrogeom])) as geometry FROM areaDesconhecida LIMIT 1000").fetch_arrow_table()
-arrow_table = con.sql("""SELECT estacao.id, estacao.nome, areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, ST_AsWKB(ST_Collect([the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)])) as geometry
-        FROM estacao JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))""").fetch_arrow_table()
+arrow_table_areas = con.sql("""SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, ST_AsWKB(areaDesconhecida.the_elipsegeom) as geometry
+        FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))""").fetch_arrow_table()
+arrow_table_pontos = con.sql("""SELECT estacao.id, estacao.nome, ST_AsWKB(ST_Point(estacao.longitude,estacao.latitude)) as geometry
+        FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))""").fetch_arrow_table()
 
-gdf_wkb = gpd.GeoDataFrame(arrow_table.to_pandas(), geometry=gpd.GeoSeries.from_wkb(arrow_table["geometry"]), crs="EPSG:4618")
+# con.sql("""SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom as geometry
+#         FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))""").show()
+# con.sql("""SELECT estacao.id, estacao.nome, ST_Point(estacao.longitude,estacao.latitude) as geometry
+#         FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))""").show()
+
+
+gdf_areas = gpd.GeoDataFrame(arrow_table_areas.to_pandas(), geometry=gpd.GeoSeries.from_wkb(arrow_table_areas["geometry"]), crs="EPSG:4618")
+gdf_pontos = gpd.GeoDataFrame(arrow_table_pontos.to_pandas(), geometry=gpd.GeoSeries.from_wkb(arrow_table_pontos["geometry"]), crs="EPSG:4618")
 # gdf.explore()  -- Se estiver rodando pela web o algoritmo
-gdf_wkb = gdf_wkb.explode(ignore_index=True)
+# gdf_areas = gdf_wkb.explode(ignore_index=True)
 
 
+print(gdf_areas.columns)
+print(gdf_pontos.columns)
 
-print(gdf_wkb.columns)
-m = gdf_wkb.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], name="areas")
+m = gdf_areas.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
+gdf_pontos.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
 
 
 # m = leafmap.Map()
@@ -126,13 +138,11 @@ print(f"tempo final: {(time.time() - tempo)}")
 # # con.sql("SELECT nome, ST_Point(latitude, longitude)::GEOMETRY('EPSG:4618') FROM estacao").show()
 
 
-
-
 # gdf = gpd.read_file("geometria_raios.geojson")
 
 # # m = leafmap.Map()
 # # m.add_vector(
-# #     gdf, 
+# #     gdf,
 # #     radius=2000,
 # #     radius_units="meters"
 # #     get_fill_color='blue'
@@ -155,10 +165,7 @@ print(f"tempo final: {(time.time() - tempo)}")
 # print(f"CRS atual {gdf.crs}")
 
 
-
 # # con.sql("CREATE TABLE IF NOT EXISTS teste (nome VARCHAR, geometrica GEOMETRY)")
-
-
 
 
 # con.sql("""
@@ -180,7 +187,6 @@ print(f"tempo final: {(time.time() - tempo)}")
 
 
 # con.sql("SELECT * FROM sensor").show()
-
 
 
 # con.table("sensor").show()

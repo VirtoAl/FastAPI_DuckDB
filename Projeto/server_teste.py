@@ -2,7 +2,7 @@ from fastmcp import FastMCP, Context
 from prefab_ui import PrefabApp
 from prefab_ui.components import Column, Heading, Text, Badge, Row
 from services.user import id
-from typing import Annotated
+
 
 
 mcp = FastMCP("meu-servidor")
@@ -12,6 +12,7 @@ mcp = FastMCP("meu-servidor")
 # def summarize(content: str) -> str:
 #     return content[:50]
 
+
 @mcp.tool
 def bom_dia(nome: str) -> str:
     """
@@ -19,12 +20,14 @@ def bom_dia(nome: str) -> str:
     """
     return f"Bom dia {nome} ó grandioso lider que sabe tudo de computação!"
 
+
 @mcp.tool(name="pratogit")
 def soma(x: int, y: int) -> int:
     """
     Retorna a soma de dois números
     """
-    return x+y
+    return x + y
+
 
 # @mcp.tool
 # def id(id: int):
