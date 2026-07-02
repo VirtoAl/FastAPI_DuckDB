@@ -45,3 +45,7 @@ api_unificada = FastAPI(
     ],
     lifespan=mcp_app.lifespan,
 )
+
+sql basics -> IN statement
+
+ST_Contains

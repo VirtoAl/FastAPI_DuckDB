@@ -2,9 +2,11 @@ import duckdb
 import time
 import numpy as np
 from fastapi import FastAPI, Query
+from fastapi.responses import HTMLResponse
 from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
+import geopandas as gpd
 
 
 def carregar_queries(caminho: str = "../queries.sql"):
@@ -30,7 +32,16 @@ def carregar_queries(caminho: str = "../queries.sql"):
 
 QUERIES = carregar_queries()
 
-con = duckdb.connect(":memory:")
+con = duckdb.connect("dados_estacao.duckdb")
+con.sql("INSTALL spatial")
+con.sql("LOAD spatial")
+
+# Tratamento de dados espaciais
+
+# con.install_extension("spatial")
+# con.load_extension("spatial")
+# con.install_extension("aws")
+# con.load_extension("aws")
 
 app = FastAPI(
     title="Minha API com DuckDB",
@@ -72,17 +83,19 @@ con.execute(
 con.execute(
     "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/unidade_medida.parquet');"
 )
+con.execute(
+    "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/*/*/*.parquet')"
+)
 
 # con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
 
 
-class Filtro(BaseModel):
+class Info(BaseModel):
     model_config = {"extra": "forbid"}
 
-    data_hora: bool = Field(description="listar por data e hora", default=None)
     estacao_id: bool = Field(description="listar por ID da estação", default=None)
     sensor_id: bool = Field(description="listar por ID do sensor", default=None)
-    qualidade_id: bool = Field(description="listar por ID da qualidade", default=None)
+    # qualidade_id: bool = Field(description="listar por ID da qualidade", default=None)
 
 
 @app.get("/filtros", operation_id="filtros")
@@ -99,7 +112,6 @@ async def filtro_de_dados_geral(
 ):
 
     cur_time = time.time()
-
 
     filtros = []
 
@@ -129,7 +141,7 @@ async def filtro_de_dados_geral(
             return "formatos esperado:|  HH:MM-HH:MM  |  HH:MM:SS-HH:MM:SS  |"
 
     if filtroSensor is not None:
-        sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
+        sensor = con.execute(QUERIES["sensor"], [filtroSensor, filtroSensor]).df()
 
         if sensor.empty:
             return "Nenhum sensor com o nome curto fornecido"
@@ -152,7 +164,9 @@ async def filtro_de_dados_geral(
 
     tabelaAux = con.execute(QUERIES["dados_filtrados"])
 
-    dfColunas = con.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'dadosFiltro'").df()
+    dfColunas = con.execute(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'dadosFiltro'"
+    ).df()
     colunas_permitidas = set(dfColunas["column_name"])
     lista_chaves = set().union(*filtros)
     lista_chaves.discard("data_hora")
@@ -160,65 +174,41 @@ async def filtro_de_dados_geral(
     chaves_validadas = lista_chaves & colunas_permitidas
 
     colunas = ", ".join(chaves_validadas)
+
     QUERIES["tabela_final"] = f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro"
     tabelaAux = con.execute(QUERIES["tabela_final"]).df()
-    
-    #abelaAux = con.execute(teste).df()
+
     tabelaAux.replace({np.nan: None}, inplace=True)
 
     result = tabelaAux.to_dict("records")
 
-    print(f"tempo final: {(time.time() - cur_time)}")
-
     return (
-        {"filtros:": filtros, "dados": result}
+        {"Filtros:": filtros, "Dados": result}
         if filtros is not None
-        else {"dados": result}
+        else {"Dados": result}
     )
 
 
-@app.get("/dadosBrutos",operation_id="listar_estacoes")
+@app.get("/listaEstacoes", operation_id="listar_estacoes")
 async def estacoes():
     df = con.execute("SELECT id, nome FROM estacao ORDER BY nome").df()
     df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
     dados = df.to_dict("records")
 
-    return {"estações": dados}
+    return {"Estações": dados}
 
 
-@app.get("/listaDeDados")
-async def bases_em_funcionamento(
-    dados_filtro: Annotated[
-        Filtro, Query(title="Base de dados em execução", description="filtro de dados")
-    ],
-):
+@app.get("/listaSensores", operation_id="listar_sensores")
+async def sensores():
+    df = con.execute("SELECT id, descricao, nome_curto FROM sensor ORDER BY id").df()
+    df.replace({np.nan: None}, inplace=True)
+    dados = df.to_dict("records")
 
-    lista_de_tuplas: list = []
-
-    for dados in dados_filtro:
-        if dados[1]:
-            lista_de_tuplas.append(dados)
-
-    info = dict(lista_de_tuplas)
-
-    lista = list(info.keys())
-    print(lista)
-
-    try:
-        df = con.execute(
-            "SELECT DISTINCT COlUMNS(c -> c IN ?)FROM data_0 ORDER BY ALL", [lista]
-        ).df()
-    except Exception as e:
-        print(e)
-        return "Por favor selecionar ao menos um campo para busca"
-
-    resultado = df.to_dict("records")
-
-    return {"dados listados": resultado}
+    return {"Sensores": dados}
 
 
-@app.get("/filtroEstacao")
-async def filtro_de_dados_por_estacao(
+@app.get("/infoEstacao", operation_id="info_estacoes")
+async def info_estacao(
     id_estacao: Annotated[int | None, Query()] = None,
 ):
 
@@ -243,48 +233,109 @@ async def filtro_de_dados_por_estacao(
     return "nenhum dado fornecido"
 
 
-@app.get("/filtroHora")
-async def filtro_de_dados_por_horario(datahora: Annotated[str, Query()]):
+@app.get("/infoSensor", operation_id="info_sensores")
+async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
-    try:
-        df = con.execute(
-            "SELECT data_hora FROM data_0  WHERE data_hora::TIMETZ = ?::TIMETZ LIMIT 1",
-            [datahora],
-        ).df()
-    except Exception as e:
-        print(e)
-        return "formatos esperado:|  HH:MM  |  HH:MM:SS  |  HH:MM:SS-TT[:tt]  |"
-
-    df = df.to_dict("records")
-
-    return df
-
-
-@app.get("/filtroSensor")
-async def filtro_de_dados_por_sensor(filtroSensor: Annotated[str, Query()]):
-
-    sensor = con.execute(QUERIES["sensor"], [filtroSensor]).df()
+    sensor = con.execute(QUERIES["sensor"], [filtroSensor, filtroSensor]).df()
     if sensor.empty:
         return "Nenhum sensor com o nome curto fornecido"
 
-    resultado = con.execute(QUERIES["sensor_dados"], [filtroSensor]).df()
-
-    resultado.replace({np.nan: None}, inplace=True)
-
     sensor = sensor.to_dict("records")
-    resultado = resultado.to_dict("records")
 
-    return {"Sensor:": sensor, "Dados obtidos": resultado}
+    return {"Sensor:": sensor}
+
+@app.get("/raiosRegiao", response_class=HTMLResponse)
+async def raios_regiao(id_estacao: Annotated[int, Query()]):
+    arquivoBlob = "arquivoBlob.html"
+    if id_estacao is None:
+        exit
+    else:
+        ponto_estacao = con.execute(QUERIES["pontos_estacoes"], [id_estacao]).to_arrow_table()
+        area_raios = con.execute(QUERIES["area_raios"], [id_estacao]).to_arrow_table()
+        gdf_areas = gpd.GeoDataFrame(area_raios.to_pandas(), geometry=gpd.GeoSeries.from_wkb(area_raios["geometry"]), crs="EPSG:4618")
+        gdf_pontos = gpd.GeoDataFrame(ponto_estacao.to_pandas(), geometry=gpd.GeoSeries.from_wkb(ponto_estacao["geometry"]), crs="EPSG:4618")
+
+        if gdf_pontos.empty:
+            return "Nenhuma estação com o id fornecido"
+
+        print(gdf_areas)
+        m = gdf_areas.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
+        gdf_pontos.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
+        
+        mapa_html = m._repr_html_()
+
+        return HTMLResponse(content=mapa_html)
+    
+    return "nenhum dado fornecido"  
+
+"""
+@app.get("/listaDeDados")
+async def bases_em_funcionamento(
+    dados_info: Annotated[
+        Info, Query(title="Base de dados em execução", description="filtro de dados")
+    ],
+):
+
+    lista_de_tuplas: list = []
+    print(dados_info)
+    for dados in dados_info:
+        if dados[1]:
+            lista_de_tuplas.append(dados)
+
+    info = dict(lista_de_tuplas)
+
+    lista = list(info.keys())
+    print(lista)
+
+    if dados_info.estacao_id is True and dados_info.sensor_id is True:
+        df = con.execute("SELECT id, nome from estacao UNION SELECT id, descricao, nome_curto FROM sensor").df()
+        df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+        dados = df.to_dict("records")
+        return {"União": dados}
+    elif dados_info.estacao_id is True:
+        df = con.execute("SELECT id, nome FROM estacao ORDER BY nome").df()
+        df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
+        dados = df.to_dict("records")
+        return {"Estações": dados}
+    elif dados_info.sensor_id is True:
+        df = con.execute("SELECT id, descricao, nome_curto FROM sensor ORDER BY id").df()
+        df.replace({np.nan: None}, inplace=True)
+        dados = df.to_dict("records")
+
+        return {"Sensores": dados}
+
+    
+
+
+
+    try:
+        df = con.execute(
+            "SELECT DISTINCT COlUMNS(c -> c IN ?)FROM data_0 ORDER BY ALL", [lista]
+        ).df()
+    except Exception as e:
+        print(e)
+        return "Por favor selecionar ao menos um campo para busca"
+
+    resultado = df.to_dict("records")
+
+    return {"dados listados": resultado}
+"""
 
 mcp = FastApiMCP(
     app,
     name="Minha API com DuckDB",
     description="Dados retirados do banco de dados do DuckDB serão demonstrados a seguir",
-    include_operations=["listar_estacoes", "filtros"]
+    include_operations=[
+        "filtros",
+        "listar_estacoes",
+        "listar_sensores",
+        "info_estacoes",
+        "info_sensores",
+    ],
 )
 mcp.mount_http()
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8001)
-    

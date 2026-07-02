@@ -20,7 +20,7 @@ DELETE FROM dados WHERE dados.estacao_id != ?;
 SELECT sensor.id as sensor_id, sensor.descricao, sensor.nome_curto, unidade_medida.sigla as unidade_medida, unidade_medida.descricao as descricao_da_medida, operacao.funcao as operacao 
 FROM sensor LEFT JOIN unidade_medida on sensor.unidade_medida_id = unidade_medida.id
 LEFT JOIN operacao on sensor.classificacao_id = operacao.id
-WHERE nome_curto = ?;
+WHERE sensor.descricao = ? OR sensor.nome_curto = ?;
 
 -- name: sensor_dados
 SELECT data_0.data_hora, estacao.nome as estacao_nome, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, data_0.valor, qualidade.descricao as nivel_qualidade
@@ -67,3 +67,10 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;
 
+-- name: area_raios
+SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, ST_AsWKB(areaDesconhecida.the_elipsegeom) as geometry
+FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;
+
+-- name: pontos_estacoes
+SELECT estacao.id, estacao.nome, ST_AsWKB(ST_Point(estacao.longitude,estacao.latitude)) as geometry
+FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;
