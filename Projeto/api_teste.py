@@ -49,42 +49,42 @@ app = FastAPI(
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/data_0.parquet');"
+    "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('../dadosSimepar/data_0.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/estacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('../dadosSimepar/estacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/operacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('../dadosSimepar/operacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/orgao.parquet');"
+    "CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('../dadosSimepar/orgao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/qualidade.parquet');"
+    "CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('../dadosSimepar/qualidade.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/sensor.parquet');"
+    "CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('../dadosSimepar/sensor.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/tipo_coleta.parquet');"
+    "CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('../dadosSimepar/tipo_coleta.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/tipo_estacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('../dadosSimepar/tipo_estacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/unidade_medida.parquet');"
+    "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('../dadosSimepar/unidade_medida.parquet');"
 )
 con.execute(
-    "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/*/*/*.parquet')"
+    "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/dadosSimepar/dadosRaios/ano=2025/*/*/*.parquet')"
 )
 
 # con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
