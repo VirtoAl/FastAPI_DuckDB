@@ -9,7 +9,7 @@ from fastapi_mcp import FastApiMCP
 import geopandas as gpd
 
 
-def carregar_queries(caminho: str = "../queries.sql"):
+def carregar_queries(caminho: str = "queries.sql"):
     queries: dict = {}
     nome_atual: None = None
     linhas_comando: list = []
