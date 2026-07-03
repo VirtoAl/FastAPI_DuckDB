@@ -68,9 +68,8 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 ALTER TABLE dados DROP COLUMN sensor_id;
 
 -- name: area_raios
-SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, ST_AsWKB(areaDesconhecida.the_elipsegeom) as geometry
-FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;
+COPY (SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))WHERE estacao.id = ?) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
 -- name: pontos_estacoes
-SELECT estacao.id, estacao.nome, ST_AsWKB(ST_Point(estacao.longitude,estacao.latitude)) as geometry
-FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?;
+COPY (SELECT estacao.id, estacao.nome, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+

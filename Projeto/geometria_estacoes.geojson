@@ -1,6 +1,6 @@
 {
 "type": "FeatureCollection",
-"name": "geometria_raios",
+"name": "geometria_estacoes",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4618" } },
 "features": [
 

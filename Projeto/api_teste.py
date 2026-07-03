@@ -49,42 +49,42 @@ app = FastAPI(
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/data_0.parquet');"
+    "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('../dadosSimepar/data_0.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/estacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('../dadosSimepar/estacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/operacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('../dadosSimepar/operacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/orgao.parquet');"
+    "CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('../dadosSimepar/orgao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/qualidade.parquet');"
+    "CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('../dadosSimepar/qualidade.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/sensor.parquet');"
+    "CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('../dadosSimepar/sensor.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/tipo_coleta.parquet');"
+    "CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('../dadosSimepar/tipo_coleta.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/tipo_estacao.parquet');"
+    "CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('../dadosSimepar/tipo_estacao.parquet');"
 )
 
 con.execute(
-    "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('../reatividadedeestgioduckdb/unidade_medida.parquet');"
+    "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('../dadosSimepar/unidade_medida.parquet');"
 )
 con.execute(
-    "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/reatividadedeestgioduckdb/production_mimic/ano=2025/*/*/*.parquet')"
+    "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('/home/vitor.oliveira/Downloads/estudo/git-demo/dadosSimepar/dadosRaios/ano=2025/*/*/*.parquet')"
 )
 
 # con.execute("CREATE INDEX IF NOT EXISTS s_idx ON data_0 (sensor_id)").df()
@@ -250,23 +250,30 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
     if id_estacao is None:
         exit
     else:
-        ponto_estacao = con.execute(QUERIES["pontos_estacoes"], [id_estacao]).to_arrow_table()
-        area_raios = con.execute(QUERIES["area_raios"], [id_estacao]).to_arrow_table()
-        gdf_areas = gpd.GeoDataFrame(area_raios.to_pandas(), geometry=gpd.GeoSeries.from_wkb(area_raios["geometry"]), crs="EPSG:4618")
-        gdf_pontos = gpd.GeoDataFrame(ponto_estacao.to_pandas(), geometry=gpd.GeoSeries.from_wkb(ponto_estacao["geometry"]), crs="EPSG:4618")
+        con.execute(QUERIES["pontos_estacoes"], [id_estacao])
+        con.execute(QUERIES["area_raios"], [id_estacao])
 
-        if gdf_pontos.empty:
+        gdf_estacoes = gpd.read_file("geometria_estacoes.geojson")
+        gdf_raios = gpd.read_file("geometria_raios.geojson")
+
+        print(gdf_raios.at)
+
+        if gdf_estacoes['geometry'].isna().all():
             return "Nenhuma estação com o id fornecido"
+        if gdf_raios['geometry'].isna().all():
+            return "Nenhum raio na região selecionada"
 
-        print(gdf_areas)
-        m = gdf_areas.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
-        gdf_pontos.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
+        # print(gdf_raios)
+        m = gdf_raios.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
+        gdf_estacoes.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
         
         mapa_html = m._repr_html_()
 
         return HTMLResponse(content=mapa_html)
     
     return "nenhum dado fornecido"  
+
+
 
 """
 @app.get("/listaDeDados")
