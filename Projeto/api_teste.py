@@ -7,7 +7,10 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
 import geopandas as gpd
-
+import pandas as pd
+import geojson
+import folium
+from folium import MacroElement
 
 def carregar_queries(caminho: str = "../queries.sql"):
     queries: dict = {}
@@ -32,7 +35,7 @@ def carregar_queries(caminho: str = "../queries.sql"):
 
 QUERIES = carregar_queries()
 
-con = duckdb.connect("dados_estacao.duckdb")
+con = duckdb.connect("dados_estacaos.duckdb")
 con.sql("INSTALL spatial")
 con.sql("LOAD spatial")
 
@@ -244,17 +247,24 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
     return {"Sensor:": sensor}
 
-@app.get("/raiosRegiao", response_class=HTMLResponse)
+@app.get("/raiosRegiaoPlotagem")
 async def raios_regiao(id_estacao: Annotated[int, Query()]):
-    arquivoBlob = "arquivoBlob.html"
+
     if id_estacao is None:
         exit
     else:
         con.execute(QUERIES["pontos_estacoes"], [id_estacao])
         con.execute(QUERIES["area_raios"], [id_estacao])
 
-        gdf_estacoes = gpd.read_file("geometria_estacoes.geojson")
-        gdf_raios = gpd.read_file("geometria_raios.geojson")
+        with open("geometria_estacoes.geojson") as f:
+            arquivoEstacaoes = geojson.load(f)
+        with open("geometria_raios.geojson") as f:
+            arquivoRaios = geojson.load(f)
+
+
+        gdf_estacoes = gpd.read_file(arquivoEstacaoes)
+        gdf_raios = gpd.read_file(arquivoRaios)
+
 
         print(gdf_raios.at)
 
@@ -263,15 +273,74 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
         if gdf_raios['geometry'].isna().all():
             return "Nenhum raio na região selecionada"
 
-        # print(gdf_raios)
-        m = gdf_raios.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
-        gdf_estacoes.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
+        # Mapeamento de cores
+        color_map = {
+            'Leve': 'yellow',
+            'Média': 'red',
+            'Alta': 'darkred'
+        }
+
+        m = gdf_raios.explore(
+            popup=True,
+            tooltip=['Data_hora', 'lon', 'lat', 'Precisao_coleta', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
+            marker_type='marker',
+            marker_kwds=dict(icon=folium.DivIcon()),
+            style_kwds=dict(
+                style_function=lambda x: {
+                    "html": f"""<div style="position: absolute;font-size: 24px; color: {color_map.get(x['properties']['Intensidade_do_Raio'], 'yellow')}; text-shadow: 2px 2px 2px black; z-index: 1;">
+                        <i class="fa fa-bolt"></i>
+                    </div>"""
+                }
+            ), control_scale=False, overlay=True,
+            name="Areas de incidência de raio"
+        )
         
+        gdf_estacoes.explore(
+            m=m,
+            tooltip=['lon', 'lat', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
+            marker_type='marker',
+            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(48, 48),)),
+            style_kwds=dict(
+                style_function=lambda x: {
+                    "html": f"""<div style="position: absolute;font-size: 96px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px black; z-index: 1000;">
+                        <i class="fa fa-satellite-dish"></i>
+                    </div>"""
+                }
+            ),
+            name="Estações"
+        )
         mapa_html = m._repr_html_()
 
         return HTMLResponse(content=mapa_html)
+    return "nenhum dado fornecido"  
+
+
+@app.get("/raiosRegiaoGeojson")
+async def raios_regiao(id_estacao: Annotated[int, Query()]):
+    # arquivoBlob = "arquivoBlob.html"
+
+    if id_estacao is None:
+        exit
+    else:
+        con.execute(QUERIES["pontos_estacoes"], [id_estacao])
+        con.execute(QUERIES["area_raios"], [id_estacao])
+
+        with open("geometria_estacoes.geojson") as f:
+            arquivoEstacoes = geojson.load(f)
+        with open("geometria_raios.geojson") as f:
+            arquivoRaios = geojson.load(f)
+
+        if not arquivoEstacoes['features']:
+            return "Nenhuma estação com o id fornecido"
+        if not arquivoRaios['features']:
+            return "Nenhum raio na região selecionada"
+
+
+        return {"Dados Estações": arquivoEstacoes, "Dados Raios": arquivoRaios}
     
     return "nenhum dado fornecido"  
+
+
 
 
 
@@ -345,4 +414,4 @@ mcp.mount_http()
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

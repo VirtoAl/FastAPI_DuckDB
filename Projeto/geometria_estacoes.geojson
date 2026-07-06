@@ -3,6 +3,6 @@
 "name": "geometria_estacoes",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4618" } },
 "features": [
-
+{ "type": "Feature", "properties": { "estacao_id": 25384924, "nome": "CURITIBA - Boa Vista", "lon": -49.245, "lat": -25.379, "altitude": null, "nome_orgao": "CEMADEN", "tipo_estacao": "Pluviométrica", "tipo_coleta": "Telemétrica", "classificacao": "", "inicio_operacao": "2014-12-14", "fim_operacao": null }, "geometry": { "type": "Point", "coordinates": [ -49.245, -25.379 ] } }
 ]
 }

@@ -68,8 +68,21 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 ALTER TABLE dados DROP COLUMN sensor_id;
 
 -- name: area_raios
-COPY (SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))WHERE estacao.id = ?) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.chi_square_value as Precisao_coleta,areaDesconhecida.the_centrogeom::GEOMETRY('EPSG:4618'), max_rate_of_rise,
+         CASE 
+            WHEN max_rate_of_rise <= 10 THEN 'Leve'
+            WHEN max_rate_of_rise > 10 AND max_rate_of_rise < 25 THEN 'Média'
+            ELSE 'Alta'
+            END AS Intensidade_do_Raio,
+         CASE
+            WHEN peak_current <= 0 THEN 'Raio Comum'
+            WHEN peak_current > 0 THEN 'Raio Nuvem-a-Nuvem'
+            END AS Status_Raio FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))WHERE estacao.id = ?) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
 -- name: pontos_estacoes
-COPY (SELECT estacao.id, estacao.nome, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+COPY (SELECT DISTINCT estacao.id as estacao_id, estacao.nome, estacao.longitude as lon, estacao.latitude as lat, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618'), estacao.altitude, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, estacao.classificacao, estacao.inicio_operacao, estacao.fim_operacao
+FROM estacao LEFT JOIN orgao on orgao.id = estacao.orgao_id
+LEFT JOIN tipo_estacao on estacao.tipo_estacao_id = tipo_estacao.id 
+LEFT JOIN tipo_coleta on estacao.tipo_coleta_id = tipo_coleta.id
+LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id = ?) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
