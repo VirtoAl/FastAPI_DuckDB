@@ -250,7 +250,7 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
     return {"Sensor:": sensor}
 
 @app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
-async def raios_regiao(id_estacao: Annotated[int, Query()]):
+async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
 
     if id_estacao is None:
         exit
@@ -318,8 +318,7 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
 
 
 @app.get("/raiosRegiaoGeojson", operation_id="raios_geojson")
-async def raios_regiao(id_estacao: Annotated[int, Query()]):
-    # arquivoBlob = "arquivoBlob.html"
+async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
 
     if id_estacao is None:
         exit
