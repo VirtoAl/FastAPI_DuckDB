@@ -8,7 +8,7 @@
 
 ## Configuração MCP atual
 - Server: duckdb-api
-- URL: http://localhost:8001/mcp
+- URL: http://localhost:8000/mcp
 - Ferramenta disponível: filtros, listar_estacoes, listar_sensores, info_estacoes, info_sensores
 
 ## Fluxo correto para acessar dados:

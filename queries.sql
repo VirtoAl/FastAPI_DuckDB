@@ -68,10 +68,15 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 ALTER TABLE dados DROP COLUMN sensor_id;
 
 -- name: area_raios
-COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.chi_square_value as Precisao_coleta,areaDesconhecida.the_centrogeom::GEOMETRY('EPSG:4618'), max_rate_of_rise,
+COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.chi_square_value, areaDesconhecida.the_centrogeom::GEOMETRY('EPSG:4618'), max_rate_of_rise,
+         CASE
+            WHEN chi_square_value <=3 THEN 'Altamente Confiável'
+            WHEN chi_square_value >3 AND chi_square_value <=6 THEN 'Mediano'
+            ELSE 'Pouco Confiável'
+            END AS Precisao_coleta,
          CASE 
-            WHEN max_rate_of_rise <= 10 THEN 'Leve'
-            WHEN max_rate_of_rise > 10 AND max_rate_of_rise < 25 THEN 'Média'
+            WHEN abs(max_rate_of_rise) <= 10 THEN 'Leve'
+            WHEN abs(max_rate_of_rise) > 10 AND abs(max_rate_of_rise) < 25 THEN 'Média'
             ELSE 'Alta'
             END AS Intensidade_do_Raio,
          CASE

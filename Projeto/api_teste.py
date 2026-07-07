@@ -10,7 +10,9 @@ import geopandas as gpd
 import pandas as pd
 import geojson
 import folium
-from folium import MacroElement
+from folium import LayerControl
+import subprocess
+import os
 
 def carregar_queries(caminho: str = "../queries.sql"):
     queries: dict = {}
@@ -247,7 +249,7 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
     return {"Sensor:": sensor}
 
-@app.get("/raiosRegiaoPlotagem")
+@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
 async def raios_regiao(id_estacao: Annotated[int, Query()]):
 
     if id_estacao is None:
@@ -261,12 +263,10 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
         with open("geometria_raios.geojson") as f:
             arquivoRaios = geojson.load(f)
 
-
-        gdf_estacoes = gpd.read_file(arquivoEstacaoes)
         gdf_raios = gpd.read_file(arquivoRaios)
+        gdf_estacoes = gpd.read_file(arquivoEstacaoes)
+        
 
-
-        print(gdf_raios.at)
 
         if gdf_estacoes['geometry'].isna().all():
             return "Nenhuma estação com o id fornecido"
@@ -282,12 +282,12 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
 
         m = gdf_raios.explore(
             popup=True,
-            tooltip=['Data_hora', 'lon', 'lat', 'Precisao_coleta', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
+            tooltip=['Data_hora', 'lon', 'lat', 'Precisao_coleta', 'chi_square_value', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
             marker_type='marker',
-            marker_kwds=dict(icon=folium.DivIcon()),
+            marker_kwds=dict(icon=folium.DivIcon(), z_index_offset=100),
             style_kwds=dict(
                 style_function=lambda x: {
-                    "html": f"""<div style="position: absolute;font-size: 24px; color: {color_map.get(x['properties']['Intensidade_do_Raio'], 'yellow')}; text-shadow: 2px 2px 2px black; z-index: 1;">
+                    "html": f"""<div style="position: absolute;font-size: 24px; color: {color_map.get(x['properties']['Intensidade_do_Raio'], 'yellow')}; text-shadow: 2px 2px 2px black;">
                         <i class="fa fa-bolt"></i>
                     </div>"""
                 }
@@ -295,27 +295,29 @@ async def raios_regiao(id_estacao: Annotated[int, Query()]):
             name="Areas de incidência de raio"
         )
         
-        gdf_estacoes.explore(
+        m = gdf_estacoes.explore(
             m=m,
             tooltip=['lon', 'lat', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
             marker_type='marker',
-            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(48, 48),)),
+            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(48, 48)), z_index_offset=1000),
             style_kwds=dict(
                 style_function=lambda x: {
-                    "html": f"""<div style="position: absolute;font-size: 96px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px black; z-index: 1000;">
+                    "html": f"""<div style="position: absolute;font-size: 96px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px  black;">
                         <i class="fa fa-satellite-dish"></i>
                     </div>"""
                 }
             ),
             name="Estações"
         )
+        LayerControl().add_to(m)
+
         mapa_html = m._repr_html_()
 
         return HTMLResponse(content=mapa_html)
     return "nenhum dado fornecido"  
 
 
-@app.get("/raiosRegiaoGeojson")
+@app.get("/raiosRegiaoGeojson", operation_id="raios_geojson")
 async def raios_regiao(id_estacao: Annotated[int, Query()]):
     # arquivoBlob = "arquivoBlob.html"
 
@@ -407,6 +409,8 @@ mcp = FastApiMCP(
         "listar_sensores",
         "info_estacoes",
         "info_sensores",
+        "raios_geojson",
+        "plotagem_mapa"
     ],
 )
 mcp.mount_http()

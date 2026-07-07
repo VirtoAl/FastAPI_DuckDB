@@ -1,0 +1,409 @@
+<div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -> Trust Notebook</span><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://code.jquery.com/jquery-3.7.1.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/&gt;
+    
+            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+            &lt;style&gt;
+                #map_5887aa49bb291dca81ebdfcb332d3da2 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            &lt;/style&gt;
+
+            &lt;style&gt;html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            &lt;/style&gt;
+
+            &lt;style&gt;#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            &lt;/style&gt;
+
+            &lt;script&gt;
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            &lt;/script&gt;
+
+        
+    
+                    &lt;style&gt;
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    &lt;/style&gt;
+            
+    
+                    &lt;style&gt;
+                        .foliumpopup {
+                            margin: auto;
+                        }
+                       .foliumpopup table{
+                            margin: auto;
+                        }
+                        .foliumpopup tr{
+                            text-align: left;
+                        }
+                        .foliumpopup th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    &lt;/style&gt;
+            
+    
+                    &lt;style&gt;
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    &lt;/style&gt;
+            
+&lt;/head&gt;
+&lt;body&gt;
+    
+    
+            &lt;div class=&quot;folium-map&quot; id=&quot;map_5887aa49bb291dca81ebdfcb332d3da2&quot; &gt;&lt;/div&gt;
+        
+&lt;/body&gt;
+&lt;script&gt;
+    
+    
+            var map_5887aa49bb291dca81ebdfcb332d3da2 = L.map(
+                &quot;map_5887aa49bb291dca81ebdfcb332d3da2&quot;,
+                {
+                    center: [-23.660040085688593, -46.63665394008938],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  &quot;zoom&quot;: 10,
+  &quot;zoomControl&quot;: true,
+  &quot;preferCanvas&quot;: false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_129893e136ffeebfa641f0ac3983c6b2 = L.tileLayer(
+                &quot;https://tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
+                {
+  &quot;minZoom&quot;: 0,
+  &quot;maxZoom&quot;: 19,
+  &quot;maxNativeZoom&quot;: 19,
+  &quot;noWrap&quot;: false,
+  &quot;attribution&quot;: &quot;\u0026copy; \u003ca href=\&quot;https://www.openstreetmap.org/copyright\&quot;\u003eOpenStreetMap\u003c/a\u003e contributors&quot;,
+  &quot;subdomains&quot;: &quot;abc&quot;,
+  &quot;detectRetina&quot;: false,
+  &quot;tms&quot;: false,
+  &quot;opacity&quot;: 1,
+}
+
+            );
+        
+    
+            tile_layer_129893e136ffeebfa641f0ac3983c6b2.addTo(map_5887aa49bb291dca81ebdfcb332d3da2);
+        
+    
+            map_5887aa49bb291dca81ebdfcb332d3da2.fitBounds(
+                [[-23.801890539100757, -46.799055442352866], [-23.518189632276425, -46.474252437825896]],
+                {}
+            );
+        
+    
+        function geo_json_01ce4a32440d09a391d641f075b4bbb0_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {&quot;fillOpacity&quot;: 0.5, &quot;html&quot;: &quot;&lt;div style=\&quot;position: absolute;font-size: 24px; color: yellow; text-shadow: 2px 2px 2px black; z-index: 1;\&quot;&gt;\n                        &lt;i class=\&quot;fa fa-bolt\&quot;&gt;&lt;/i&gt;\n                    &lt;/div&gt;&quot;, &quot;weight&quot;: 2};
+            }
+        }
+        function geo_json_01ce4a32440d09a391d641f075b4bbb0_highlighter(feature) {
+            switch(feature.id) {
+                default:
+                    return {&quot;fillOpacity&quot;: 0.75};
+            }
+        }
+        function geo_json_01ce4a32440d09a391d641f075b4bbb0_pointToLayer(feature, latlng) {
+            var opts = {
+};
+            
+            const iconOptions = {
+  &quot;className&quot;: &quot;empty&quot;,
+}
+            const iconRootAlias = L
+            opts.icon = new iconRootAlias.DivIcon(iconOptions)
+            
+            let style = geo_json_01ce4a32440d09a391d641f075b4bbb0_styler(feature)
+            Object.assign(opts.icon.options, style)
+            
+            return new L.Marker(latlng, opts)
+        }
+
+        function geo_json_01ce4a32440d09a391d641f075b4bbb0_onEachFeature(feature, layer) {
+
+            layer.on({
+                mouseout: function(e) {
+                    if(typeof e.target.setStyle === &quot;function&quot;){
+                            geo_json_01ce4a32440d09a391d641f075b4bbb0.resetStyle(e.target);
+                    }
+                },
+                mouseover: function(e) {
+                    if(typeof e.target.setStyle === &quot;function&quot;){
+                        const highlightStyle = geo_json_01ce4a32440d09a391d641f075b4bbb0_highlighter(e.target.feature)
+                        e.target.setStyle(highlightStyle);
+                    }
+                },
+            });
+        };
+        var geo_json_01ce4a32440d09a391d641f075b4bbb0 = L.geoJson(null, {
+                onEachFeature: geo_json_01ce4a32440d09a391d641f075b4bbb0_onEachFeature,
+            
+                style: geo_json_01ce4a32440d09a391d641f075b4bbb0_styler,
+                pointToLayer: geo_json_01ce4a32440d09a391d641f075b4bbb0_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_01ce4a32440d09a391d641f075b4bbb0_add (data) {
+            geo_json_01ce4a32440d09a391d641f075b4bbb0
+                .addData(data);
+        }
+            geo_json_01ce4a32440d09a391d641f075b4bbb0_add({&quot;bbox&quot;: [-46.799055442352866, -23.801890539100757, -46.474252437825896, -23.518189632276425], &quot;features&quot;: [{&quot;bbox&quot;: [-46.641754354938506, -23.79509051323486, -46.641754354938506, -23.79509051323486], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.641754354938506, -23.79509051323486], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;0&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 23:15:19&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.9, &quot;lat&quot;: -23.7946, &quot;lon&quot;: -46.6413, &quot;max_rate_of_rise&quot;: 5.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.64325439119052, -23.801890539100757, -46.64325439119052, -23.801890539100757], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.64325439119052, -23.801890539100757], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;1&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 23:18:16&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.8014, &quot;lon&quot;: -46.6428, &quot;max_rate_of_rise&quot;: 3.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.621253509900924, -23.600489703559425, -46.621253509900924, -23.600489703559425], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.621253509900924, -23.600489703559425], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;2&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 22:54:37&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 1.6, &quot;lat&quot;: -23.6, &quot;lon&quot;: -46.6208, &quot;max_rate_of_rise&quot;: 4.8}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.644353929465346, -23.665989929376344, -46.644353929465346, -23.665989929376344], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.644353929465346, -23.665989929376344], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;3&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-18 17:32:22&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6655, &quot;lon&quot;: -46.6439, &quot;max_rate_of_rise&quot;: 2.1}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.63615411279623, -23.73889027913844, -46.63615411279623, -23.73889027913844], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.63615411279623, -23.73889027913844], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;4&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-18 17:15:44&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.5, &quot;lat&quot;: -23.7384, &quot;lon&quot;: -46.6357, &quot;max_rate_of_rise&quot;: -0.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.59485343970301, -23.64448997798074, -46.59485343970301, -23.64448997798074], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.59485343970301, -23.64448997798074], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;5&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-11-08 05:48:05&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.644, &quot;lon&quot;: -46.5944, &quot;max_rate_of_rise&quot;: 1.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.64665395153209, -23.66678992621707, -46.64665395153209, -23.66678992621707], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.64665395153209, -23.66678992621707], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;6&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-02 19:40:59&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6663, &quot;lon&quot;: -46.6462, &quot;max_rate_of_rise&quot;: -1.2}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.627653911578975, -23.701390136600633, -46.627653911578975, -23.701390136600633], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.627653911578975, -23.701390136600633], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;7&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-04-18 17:59:19&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.7009, &quot;lon&quot;: -46.6272, &quot;max_rate_of_rise&quot;: 0.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.62355380249772, -23.679790052036385, -46.62355380249772, -23.679790052036385], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62355380249772, -23.679790052036385], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;8&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-05-22 20:04:29&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6793, &quot;lon&quot;: -46.6231, &quot;max_rate_of_rise&quot;: -1.2}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.647254015986384, -23.683990001362545, -46.647254015986384, -23.683990001362545], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.647254015986384, -23.683990001362545], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;9&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-08 16:24:12&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.6835, &quot;lon&quot;: -46.6468, &quot;max_rate_of_rise&quot;: -1.3}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.638053988188865, -23.698290092248214, -46.638053988188865, -23.698290092248214], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.638053988188865, -23.698290092248214], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;10&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-08 16:24:37&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6978, &quot;lon&quot;: -46.6376, &quot;max_rate_of_rise&quot;: -1.5}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.65075416299367, -23.717990142976554, -46.65075416299367, -23.717990142976554], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.65075416299367, -23.717990142976554], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;11&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-09 03:45:54&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.7175, &quot;lon&quot;: -46.6503, &quot;max_rate_of_rise&quot;: -2.4}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.59245340542163, -23.640389966620432, -46.59245340542163, -23.640389966620432], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.59245340542163, -23.640389966620432], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;12&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 18:42:07&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6399, &quot;lon&quot;: -46.592, &quot;max_rate_of_rise&quot;: 1.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.56075300087513, -23.600189878792662, -46.56075300087513, -23.600189878792662], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.56075300087513, -23.600189878792662], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;13&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:38:14&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.5997, &quot;lon&quot;: -46.5603, &quot;max_rate_of_rise&quot;: 3.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.47805249525512, -23.65539036812656, -46.47805249525512, -23.65539036812656], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.47805249525512, -23.65539036812656], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;14&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-20 17:14:26&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.6549, &quot;lon&quot;: -46.4776, &quot;max_rate_of_rise&quot;: 0.8}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.62775383189286, -23.678090032127436, -46.62775383189286, -23.678090032127436], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62775383189286, -23.678090032127436], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;15&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-10-29 08:56:29&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.6776, &quot;lon&quot;: -46.6273, &quot;max_rate_of_rise&quot;: 3.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.68395410059049, -23.61928960450854, -46.68395410059049, -23.61928960450854], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.68395410059049, -23.61928960450854], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;16&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 22:37:39&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6188, &quot;lon&quot;: -46.6835, &quot;max_rate_of_rise&quot;: -1.7}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.76345505213723, -23.701789739661724, -46.76345505213723, -23.701789739661724], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.76345505213723, -23.701789739661724], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;17&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 23:12:21&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.7013, &quot;lon&quot;: -46.763, &quot;max_rate_of_rise&quot;: -1.1}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.62115393726241, -23.7245902593304, -46.62115393726241, -23.7245902593304], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62115393726241, -23.7245902593304], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;18&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 23:14:40&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.7241, &quot;lon&quot;: -46.6207, &quot;max_rate_of_rise&quot;: 5.1}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.56515317745563, -23.64079004820362, -46.56515317745563, -23.64079004820362], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.56515317745563, -23.64079004820362], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;19&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-06 22:26:21&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6403, &quot;lon&quot;: -46.5647, &quot;max_rate_of_rise&quot;: -2.1}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.62075377207805, -23.677790051291883, -46.62075377207805, -23.677790051291883], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62075377207805, -23.677790051291883], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;20&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-29 14:23:57&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6773, &quot;lon&quot;: -46.6203, &quot;max_rate_of_rise&quot;: 0.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.530652687218016, -23.58248988697056, -46.530652687218016, -23.58248988697056], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.530652687218016, -23.58248988697056], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;21&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:26:39&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.582, &quot;lon&quot;: -46.5302, &quot;max_rate_of_rise&quot;: 2.4}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.702554763964805, -23.76589020422395, -46.702554763964805, -23.76589020422395], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.702554763964805, -23.76589020422395], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;22&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:28:35&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.5, &quot;lat&quot;: -23.7654, &quot;lon&quot;: -46.7021, &quot;max_rate_of_rise&quot;: 2.4}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.5676530904489, -23.609389899979966, -46.5676530904489, -23.609389899979966], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.5676530904489, -23.609389899979966], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;23&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:29:04&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6089, &quot;lon&quot;: -46.5672, &quot;max_rate_of_rise&quot;: 1.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.597653475279806, -23.647989985477547, -46.597653475279806, -23.647989985477547], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.597653475279806, -23.647989985477547], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;24&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:29:24&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6475, &quot;lon&quot;: -46.5972, &quot;max_rate_of_rise&quot;: 2.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.561153053372024, -23.614489941850724, -46.561153053372024, -23.614489941850724], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.561153053372024, -23.614489941850724], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;25&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:29:42&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.614, &quot;lon&quot;: -46.5607, &quot;max_rate_of_rise&quot;: 3.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.67455443730533, -23.7394901689841, -46.67455443730533, -23.7394901689841], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.67455443730533, -23.7394901689841], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;26&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:29:42&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.4, &quot;lat&quot;: -23.739, &quot;lon&quot;: -46.6741, &quot;max_rate_of_rise&quot;: 1.5}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.522552865486226, -23.65419023279331, -46.522552865486226, -23.65419023279331], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.522552865486226, -23.65419023279331], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;27&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-03-31 18:20:26&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6537, &quot;lon&quot;: -46.5221, &quot;max_rate_of_rise&quot;: -1.7}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.63205386903273, -23.678390020870957, -46.63205386903273, -23.678390020870957], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.63205386903273, -23.678390020870957], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;28&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-04-18 18:24:25&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6779, &quot;lon&quot;: -46.6316, &quot;max_rate_of_rise&quot;: -0.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.474252437825896, -23.647990345957183, -46.474252437825896, -23.647990345957183], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.474252437825896, -23.647990345957183], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;29&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 05:50:29&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.3, &quot;lat&quot;: -23.6475, &quot;lon&quot;: -46.4738, &quot;max_rate_of_rise&quot;: 0.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.799055442352866, -23.728289752829973, -46.799055442352866, -23.728289752829973], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.799055442352866, -23.728289752829973], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;30&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-13 17:15:41&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.7278, &quot;lon&quot;: -46.7986, &quot;max_rate_of_rise&quot;: -3.7}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.48495253474489, -23.649990323720512, -46.48495253474489, -23.649990323720512], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.48495253474489, -23.649990323720512], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;31&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-13 17:19:30&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6495, &quot;lon&quot;: -46.4845, &quot;max_rate_of_rise&quot;: 0.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.62065374845055, -23.671190022054176, -46.62065374845055, -23.671190022054176], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62065374845055, -23.671190022054176], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;32&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-10-10 01:17:30&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.4, &quot;lat&quot;: -23.6707, &quot;lon&quot;: -46.6202, &quot;max_rate_of_rise&quot;: -5.5}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.69115477157114, -23.795590369956148, -46.69115477157114, -23.795590369956148], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.69115477157114, -23.795590369956148], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;33&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-31 18:44:09&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.7951, &quot;lon&quot;: -46.6907, &quot;max_rate_of_rise&quot;: 1.8}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.60505335570854, -23.59518972707757, -46.60505335570854, -23.59518972707757], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.60505335570854, -23.59518972707757], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;34&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-18 17:23:21&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.5, &quot;lat&quot;: -23.5947, &quot;lon&quot;: -46.6046, &quot;max_rate_of_rise&quot;: -1.8}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.54755308188016, -23.655990167820107, -46.54755308188016, -23.655990167820107], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.54755308188016, -23.655990167820107], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;35&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-18 23:25:58&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6555, &quot;lon&quot;: -46.5471, &quot;max_rate_of_rise&quot;: -1.4}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.67075404401272, -23.634989713392066, -46.67075404401272, -23.634989713392066], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.67075404401272, -23.634989713392066], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;36&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-18 23:29:34&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.6345, &quot;lon&quot;: -46.6703, &quot;max_rate_of_rise&quot;: -1.5}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.72535469711335, -23.6914898057029, -46.72535469711335, -23.6914898057029], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.72535469711335, -23.6914898057029], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;37&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-10-29 08:52:33&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.691, &quot;lon&quot;: -46.7249, &quot;max_rate_of_rise&quot;: 0.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.66175410761754, -23.675289919972403, -46.66175410761754, -23.675289919972403], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.66175410761754, -23.675289919972403], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;38&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-02-20 16:29:48&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.6748, &quot;lon&quot;: -46.6613, &quot;max_rate_of_rise&quot;: -1.2}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.568053276579114, -23.662490137029256, -46.568053276579114, -23.662490137029256], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.568053276579114, -23.662490137029256], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;39&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-03-31 18:01:09&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.662, &quot;lon&quot;: -46.5676, &quot;max_rate_of_rise&quot;: -1.2}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.63785407475882, -23.723790206740603, -46.63785407475882, -23.723790206740603], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.63785407475882, -23.723790206740603], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;40&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 18:06:41&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.7233, &quot;lon&quot;: -46.6374, &quot;max_rate_of_rise&quot;: 3.2}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.64655385615544, -23.639389803908326, -46.64655385615544, -23.639389803908326], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.64655385615544, -23.639389803908326], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;41&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-12-30 18:15:51&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.5, &quot;lat&quot;: -23.6389, &quot;lon&quot;: -46.6461, &quot;max_rate_of_rise&quot;: 0.9}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.71505468800162, -23.713789935385936, -46.71505468800162, -23.713789935385936], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.71505468800162, -23.713789935385936], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;42&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-29 14:35:27&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.1, &quot;lat&quot;: -23.7133, &quot;lon&quot;: -46.7146, &quot;max_rate_of_rise&quot;: -4.7}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.65475412423759, -23.697090037905784, -46.65475412423759, -23.697090037905784], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.65475412423759, -23.697090037905784], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;43&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-29 14:37:05&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6966, &quot;lon&quot;: -46.6543, &quot;max_rate_of_rise&quot;: -1.4}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.619153802513225, -23.690490112786737, -46.619153802513225, -23.690490112786737], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.619153802513225, -23.690490112786737], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;44&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-29 14:49:16&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.69, &quot;lon&quot;: -46.6187, &quot;max_rate_of_rise&quot;: 0.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.619653815697845, -23.693090122948274, -46.619653815697845, -23.693090122948274], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.619653815697845, -23.693090122948274], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;45&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-29 14:49:17&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.0, &quot;lat&quot;: -23.6926, &quot;lon&quot;: -46.6192, &quot;max_rate_of_rise&quot;: 0.0}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.63225392254593, -23.69339008735436, -46.63225392254593, -23.69339008735436], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.63225392254593, -23.69339008735436], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;46&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-01-30 18:00:20&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.6929, &quot;lon&quot;: -46.6318, &quot;max_rate_of_rise&quot;: -3.8}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.51865236628813, -23.518189632276425, -46.51865236628813, -23.518189632276425], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.51865236628813, -23.518189632276425], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;47&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-09-22 01:24:45&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Nuvem-a-Nuvem&quot;, &quot;chi_square_value&quot;: 0.4, &quot;lat&quot;: -23.5177, &quot;lon&quot;: -46.5182, &quot;max_rate_of_rise&quot;: 1.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.622253589859675, -23.621289793898377, -46.622253589859675, -23.621289793898377], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.622253589859675, -23.621289793898377], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;48&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-04-10 18:37:47&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.7, &quot;lat&quot;: -23.6208, &quot;lon&quot;: -46.6218, &quot;max_rate_of_rise&quot;: -1.6}, &quot;type&quot;: &quot;Feature&quot;}, {&quot;bbox&quot;: [-46.60085369130244, -23.70279022143112, -46.60085369130244, -23.70279022143112], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.60085369130244, -23.70279022143112], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;49&quot;, &quot;properties&quot;: {&quot;Data_hora&quot;: &quot;2025-04-10 14:52:53&quot;, &quot;Intensidade_do_Raio&quot;: &quot;Leve&quot;, &quot;Precisao_coleta&quot;: &quot;Altamente Confi\u00e1vel&quot;, &quot;Status_Raio&quot;: &quot;Raio Comum&quot;, &quot;chi_square_value&quot;: 0.2, &quot;lat&quot;: -23.7023, &quot;lon&quot;: -46.6004, &quot;max_rate_of_rise&quot;: -1.2}, &quot;type&quot;: &quot;Feature&quot;}], &quot;type&quot;: &quot;FeatureCollection&quot;});
+
+        
+    
+    geo_json_01ce4a32440d09a391d641f075b4bbb0.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create(&#x27;div&#x27;);
+    
+    let handleObject = feature =&gt; {
+        if (feature === null) {
+            return &#x27;&#x27;;
+        } else if (typeof(feature)==&#x27;object&#x27;) {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = [&quot;Data_hora&quot;, &quot;lon&quot;, &quot;lat&quot;, &quot;Precisao_coleta&quot;, &quot;chi_square_value&quot;, &quot;Status_Raio&quot;, &quot;Intensidade_do_Raio&quot;, &quot;max_rate_of_rise&quot;];
+    let aliases = [&quot;Data_hora&quot;, &quot;lon&quot;, &quot;lat&quot;, &quot;Precisao_coleta&quot;, &quot;chi_square_value&quot;, &quot;Status_Raio&quot;, &quot;Intensidade_do_Raio&quot;, &quot;max_rate_of_rise&quot;];
+    let table = &#x27;&lt;table&gt;&#x27; +
+        String(
+        fields.map(
+        (v,i)=&gt;
+        `&lt;tr&gt;
+            &lt;th&gt;${aliases[i]}&lt;/th&gt;
+            
+            &lt;td&gt;${handleObject(layer.feature.properties[v])}&lt;/td&gt;
+        &lt;/tr&gt;`).join(&#x27;&#x27;))
+    +&#x27;&lt;/table&gt;&#x27;;
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  &quot;sticky&quot;: true,
+  &quot;className&quot;: &quot;foliumtooltip&quot;,
+});
+                     
+    
+    geo_json_01ce4a32440d09a391d641f075b4bbb0.bindPopup(
+    function(layer){
+    let div = L.DomUtil.create(&#x27;div&#x27;);
+    
+    let handleObject = feature =&gt; {
+        if (feature === null) {
+            return &#x27;&#x27;;
+        } else if (typeof(feature)==&#x27;object&#x27;) {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = [&quot;Data_hora&quot;, &quot;Intensidade_do_Raio&quot;, &quot;Precisao_coleta&quot;, &quot;Status_Raio&quot;, &quot;chi_square_value&quot;, &quot;lat&quot;, &quot;lon&quot;, &quot;max_rate_of_rise&quot;];
+    let aliases = [&quot;Data_hora&quot;, &quot;Intensidade_do_Raio&quot;, &quot;Precisao_coleta&quot;, &quot;Status_Raio&quot;, &quot;chi_square_value&quot;, &quot;lat&quot;, &quot;lon&quot;, &quot;max_rate_of_rise&quot;];
+    let table = &#x27;&lt;table&gt;&#x27; +
+        String(
+        fields.map(
+        (v,i)=&gt;
+        `&lt;tr&gt;
+            &lt;th&gt;${aliases[i].toLocaleString()}&lt;/th&gt;
+            
+            &lt;td&gt;${handleObject(layer.feature.properties[v]).toLocaleString()}&lt;/td&gt;
+        &lt;/tr&gt;`).join(&#x27;&#x27;))
+    +&#x27;&lt;/table&gt;&#x27;;
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  &quot;className&quot;: &quot;foliumpopup&quot;,
+});
+                     
+    
+            geo_json_01ce4a32440d09a391d641f075b4bbb0.addTo(map_5887aa49bb291dca81ebdfcb332d3da2);
+        
+    
+        function geo_json_8765f285f579cfea79e44798f9fa51af_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {&quot;fillOpacity&quot;: 0.5, &quot;html&quot;: &quot;&lt;div style=\&quot;position: absolute;font-size: 96px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px black; z-index: 1000;\&quot;&gt;\n                        &lt;i class=\&quot;fa fa-satellite-dish\&quot;&gt;&lt;/i&gt;\n                    &lt;/div&gt;&quot;, &quot;weight&quot;: 2};
+            }
+        }
+        function geo_json_8765f285f579cfea79e44798f9fa51af_highlighter(feature) {
+            switch(feature.id) {
+                default:
+                    return {&quot;fillOpacity&quot;: 0.75};
+            }
+        }
+        function geo_json_8765f285f579cfea79e44798f9fa51af_pointToLayer(feature, latlng) {
+            var opts = {
+};
+            
+            const iconOptions = {
+  &quot;iconAnchor&quot;: [48, 48],
+  &quot;className&quot;: &quot;empty&quot;,
+}
+            const iconRootAlias = L
+            opts.icon = new iconRootAlias.DivIcon(iconOptions)
+            
+            let style = geo_json_8765f285f579cfea79e44798f9fa51af_styler(feature)
+            Object.assign(opts.icon.options, style)
+            
+            return new L.Marker(latlng, opts)
+        }
+
+        function geo_json_8765f285f579cfea79e44798f9fa51af_onEachFeature(feature, layer) {
+
+            layer.on({
+                mouseout: function(e) {
+                    if(typeof e.target.setStyle === &quot;function&quot;){
+                            geo_json_8765f285f579cfea79e44798f9fa51af.resetStyle(e.target);
+                    }
+                },
+                mouseover: function(e) {
+                    if(typeof e.target.setStyle === &quot;function&quot;){
+                        const highlightStyle = geo_json_8765f285f579cfea79e44798f9fa51af_highlighter(e.target.feature)
+                        e.target.setStyle(highlightStyle);
+                    }
+                },
+            });
+        };
+        var geo_json_8765f285f579cfea79e44798f9fa51af = L.geoJson(null, {
+                onEachFeature: geo_json_8765f285f579cfea79e44798f9fa51af_onEachFeature,
+            
+                style: geo_json_8765f285f579cfea79e44798f9fa51af_styler,
+                pointToLayer: geo_json_8765f285f579cfea79e44798f9fa51af_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_8765f285f579cfea79e44798f9fa51af_add (data) {
+            geo_json_8765f285f579cfea79e44798f9fa51af
+                .addData(data);
+        }
+            geo_json_8765f285f579cfea79e44798f9fa51af_add({&quot;bbox&quot;: [-46.62545382086995, -23.680490049600966, -46.62545382086995, -23.680490049600966], &quot;features&quot;: [{&quot;bbox&quot;: [-46.62545382086995, -23.680490049600966, -46.62545382086995, -23.680490049600966], &quot;geometry&quot;: {&quot;coordinates&quot;: [-46.62545382086995, -23.680490049600966], &quot;type&quot;: &quot;Point&quot;}, &quot;id&quot;: &quot;0&quot;, &quot;properties&quot;: {&quot;altitude&quot;: null, &quot;classificacao&quot;: &quot;&quot;, &quot;estacao_id&quot;: 23684662, &quot;fim_operacao&quot;: null, &quot;inicio_operacao&quot;: &quot;2014-07-25&quot;, &quot;lat&quot;: -23.68, &quot;lon&quot;: -46.625, &quot;nome&quot;: &quot;DIADEMA - Centro&quot;, &quot;nome_orgao&quot;: &quot;CEMADEN&quot;, &quot;tipo_coleta&quot;: &quot;Telem\u00e9trica&quot;, &quot;tipo_estacao&quot;: &quot;Pluviom\u00e9trica&quot;}, &quot;type&quot;: &quot;Feature&quot;}], &quot;type&quot;: &quot;FeatureCollection&quot;});
+
+        
+    
+    geo_json_8765f285f579cfea79e44798f9fa51af.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create(&#x27;div&#x27;);
+    
+    let handleObject = feature =&gt; {
+        if (feature === null) {
+            return &#x27;&#x27;;
+        } else if (typeof(feature)==&#x27;object&#x27;) {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = [&quot;lon&quot;, &quot;lat&quot;, &quot;estacao_id&quot;, &quot;inicio_operacao&quot;, &quot;fim_operacao&quot;, &quot;nome&quot;, &quot;nome_orgao&quot;, &quot;tipo_coleta&quot;, &quot;tipo_estacao&quot;];
+    let aliases = [&quot;lon&quot;, &quot;lat&quot;, &quot;estacao_id&quot;, &quot;inicio_operacao&quot;, &quot;fim_operacao&quot;, &quot;nome&quot;, &quot;nome_orgao&quot;, &quot;tipo_coleta&quot;, &quot;tipo_estacao&quot;];
+    let table = &#x27;&lt;table&gt;&#x27; +
+        String(
+        fields.map(
+        (v,i)=&gt;
+        `&lt;tr&gt;
+            &lt;th&gt;${aliases[i]}&lt;/th&gt;
+            
+            &lt;td&gt;${handleObject(layer.feature.properties[v])}&lt;/td&gt;
+        &lt;/tr&gt;`).join(&#x27;&#x27;))
+    +&#x27;&lt;/table&gt;&#x27;;
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  &quot;sticky&quot;: true,
+  &quot;className&quot;: &quot;foliumtooltip&quot;,
+});
+                     
+    
+            geo_json_8765f285f579cfea79e44798f9fa51af.addTo(map_5887aa49bb291dca81ebdfcb332d3da2);
+        
+    
+            var layer_control_d5c63eecc291ce8796f0b01c9c2e8d81_layers = {
+                base_layers : {
+                    &quot;openstreetmap&quot; : tile_layer_129893e136ffeebfa641f0ac3983c6b2,
+                },
+                overlays :  {
+                    &quot;Areas de incid\u00eancia de raio&quot; : geo_json_01ce4a32440d09a391d641f075b4bbb0,
+                    &quot;Esta\u00e7\u00f5es&quot; : geo_json_8765f285f579cfea79e44798f9fa51af,
+                },
+            };
+            let layer_control_d5c63eecc291ce8796f0b01c9c2e8d81 = L.control.layers(
+                layer_control_d5c63eecc291ce8796f0b01c9c2e8d81_layers.base_layers,
+                layer_control_d5c63eecc291ce8796f0b01c9c2e8d81_layers.overlays,
+                {
+  &quot;position&quot;: &quot;topright&quot;,
+  &quot;collapsed&quot;: true,
+  &quot;autoZIndex&quot;: true,
+}
+            ).addTo(map_5887aa49bb291dca81ebdfcb332d3da2);
+
+        
+&lt;/script&gt;
+&lt;/html&gt;" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe></div></div>
