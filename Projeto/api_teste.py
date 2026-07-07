@@ -37,7 +37,7 @@ def carregar_queries(caminho: str = "../queries.sql"):
 
 QUERIES = carregar_queries()
 
-con = duckdb.connect("dados_estacaos.duckdb")
+con = duckdb.connect("dados_estacao.duckdb")
 con.sql("INSTALL spatial")
 con.sql("LOAD spatial")
 
@@ -256,17 +256,20 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
         exit
     else:
         con.execute(QUERIES["pontos_estacoes"], [id_estacao])
+        con.execute(QUERIES["raios"], [id_estacao])
         con.execute(QUERIES["area_raios"], [id_estacao])
 
         with open("geometria_estacoes.geojson") as f:
             arquivoEstacaoes = geojson.load(f)
         with open("geometria_raios.geojson") as f:
             arquivoRaios = geojson.load(f)
+        with open("geometria_area_raios.geojson") as f:
+            arquivoAreaRaios = geojson.load(f)
 
         gdf_raios = gpd.read_file(arquivoRaios)
         gdf_estacoes = gpd.read_file(arquivoEstacaoes)
+        gdf_area_raios = gpd.read_file(arquivoAreaRaios)
         
-
 
         if gdf_estacoes['geometry'].isna().all():
             return "Nenhuma estação com o id fornecido"
@@ -282,7 +285,7 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
 
         m = gdf_raios.explore(
             popup=True,
-            tooltip=['Data_hora', 'lon', 'lat', 'Precisao_coleta', 'chi_square_value', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
+            tooltip=['Data_hora', 'lat', 'lon', 'Precisao_coleta', 'chi_square_value', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
             marker_type='marker',
             marker_kwds=dict(icon=folium.DivIcon(), z_index_offset=100),
             style_kwds=dict(
@@ -297,7 +300,7 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
         
         m = gdf_estacoes.explore(
             m=m,
-            tooltip=['lon', 'lat', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
+            tooltip=['lat', 'lon', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
             marker_type='marker',
             marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(48, 48)), z_index_offset=1000),
             style_kwds=dict(
@@ -309,6 +312,14 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
             ),
             name="Estações"
         )
+
+        m = gdf_area_raios.explore(
+            m=m,
+            tooltip=['numero_de_raios'],
+            name="Área de raios"
+        )
+
+
         LayerControl().add_to(m)
 
         mapa_html = m._repr_html_()
@@ -325,6 +336,8 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
     else:
         con.execute(QUERIES["pontos_estacoes"], [id_estacao])
         con.execute(QUERIES["area_raios"], [id_estacao])
+        con.execute(QUERIES["raios"], [id_estacao])
+
 
         with open("geometria_estacoes.geojson") as f:
             arquivoEstacoes = geojson.load(f)

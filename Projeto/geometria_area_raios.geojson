@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "geometria_area_raios",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4618" } },
+"features": [
+{ "type": "Feature", "properties": { "numero_de_raios": 383 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -52.4262, -26.7407 ], [ -52.4262, -26.3942 ], [ -52.1299, -26.3942 ], [ -52.1299, -26.7407 ], [ -52.4262, -26.7407 ] ] ] } }
+]
+}

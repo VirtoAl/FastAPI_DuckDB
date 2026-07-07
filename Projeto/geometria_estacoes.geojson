@@ -3,7 +3,6 @@
 "name": "geometria_estacoes",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4618" } },
 "features": [
-{ "type": "Feature", "properties": { "estacao_id": 23684662, "nome": "DIADEMA - Centro", "lon": -46.625, "lat": -23.68, "altitude": null, "nome_orgao": "CEMADEN", "tipo_estacao": "Pluviométrica", "tipo_coleta": "Telemétrica", "classificacao": "", "inicio_operacao": "2014-07-25", "fim_operacao": null }, "geometry": { "type": "Point", "coordinates": [ -46.625, -23.68 ] } },
 { "type": "Feature", "properties": { "estacao_id": 26565232, "nome": "ABELARDO LUZ - ", "lon": -52.3265, "lat": -26.5656, "altitude": null, "nome_orgao": "CEMADEN", "tipo_estacao": "Pluviométrica", "tipo_coleta": "Telemétrica", "classificacao": "", "inicio_operacao": "2014-12-19", "fim_operacao": null }, "geometry": { "type": "Point", "coordinates": [ -52.3265, -26.5656 ] } }
 ]
 }

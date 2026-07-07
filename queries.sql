@@ -67,7 +67,7 @@ SELECT DISTINCT data_hora FROM dados WHERE data_hora::TIMETZ = ? LIMIT 1;
 -- name: delete_sensor
 ALTER TABLE dados DROP COLUMN sensor_id;
 
--- name: area_raios
+-- name: raios
 COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.chi_square_value, areaDesconhecida.the_centrogeom::GEOMETRY('EPSG:4618'), max_rate_of_rise,
          CASE
             WHEN chi_square_value <=3 THEN 'Altamente Confiável'
@@ -91,3 +91,5 @@ LEFT JOIN tipo_estacao on estacao.tipo_estacao_id = tipo_estacao.id
 LEFT JOIN tipo_coleta on estacao.tipo_coleta_id = tipo_coleta.id
 LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
+-- name: area_raios
+COPY (SELECT count(areaDesconhecida.time_tick) as numero_de_raios, ST_MakeEnvelope(min(areaDesconhecida.lon) , min(areaDesconhecida.lat), max(areaDesconhecida.lon), max(areaDesconhecida.lat))::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_area_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
