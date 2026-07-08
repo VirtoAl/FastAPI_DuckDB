@@ -7,7 +7,9 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
 import geopandas as gpd
-
+import geojson
+import folium
+from folium import LayerControl
 
 def carregar_queries(caminho: str = "queries.sql"):
     queries: dict = {}
@@ -244,29 +246,126 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
     return {"Sensor:": sensor}
 
-@app.get("/raiosRegiao", response_class=HTMLResponse)
-async def raios_regiao(id_estacao: Annotated[int, Query()]):
-    arquivoBlob = "arquivoBlob.html"
+@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
+async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
+
     if id_estacao is None:
         exit
     else:
-        ponto_estacao = con.execute(QUERIES["pontos_estacoes"], [id_estacao]).to_arrow_table()
-        area_raios = con.execute(QUERIES["area_raios"], [id_estacao]).to_arrow_table()
-        gdf_areas = gpd.GeoDataFrame(area_raios.to_pandas(), geometry=gpd.GeoSeries.from_wkb(area_raios["geometry"]), crs="EPSG:4618")
-        gdf_pontos = gpd.GeoDataFrame(ponto_estacao.to_pandas(), geometry=gpd.GeoSeries.from_wkb(ponto_estacao["geometry"]), crs="EPSG:4618")
+        con.execute(QUERIES["pontos_estacoes"], [id_estacao])
+        con.execute(QUERIES["raios"], [id_estacao])
+        con.execute(QUERIES["area_raios"], [id_estacao])
 
-        if gdf_pontos.empty:
-            return "Nenhuma estação com o id fornecido"
+        with open("geometria_estacoes.geojson") as f:
+            arquivoEstacaoes = geojson.load(f)
+        with open("geometria_raios.geojson") as f:
+            arquivoRaios = geojson.load(f)
+        with open("geometria_area_raios.geojson") as f:
+            arquivoAreaRaios = geojson.load(f)
 
-        print(gdf_areas)
-        m = gdf_areas.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
-        gdf_pontos.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
+        gdf_raios = gpd.read_file(arquivoRaios)
+        gdf_estacoes = gpd.read_file(arquivoEstacaoes)
+        gdf_area_raios = gpd.read_file(arquivoAreaRaios)
         
+
+        if gdf_estacoes['geometry'].isna().all():
+            return "Nenhuma estação com o id fornecido"
+        if gdf_raios['geometry'].isna().all():
+            return "Nenhum raio na região selecionada"
+
+        color_map = {
+            'Leve': 'yellow',
+            'Média': 'red',
+            'Alta': 'darkred'
+        }
+
+        m = gdf_raios.explore(
+            popup=True,
+            tooltip=['Data_hora', 'lat', 'lon', 'Precisao_coleta', 'chi_square_value', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
+            marker_type='marker',
+            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(6, 6)), z_index_offset=100),
+            style_kwds=dict(
+                style_function=lambda x: {
+                    "html": f"""<div style="position: absolute;font-size: 12px; color: {color_map.get(x['properties']['Intensidade_do_Raio'])}; text-shadow: 2px 2px 2px black;">
+                        <i class="fa fa-bolt"></i>
+                    </div>"""
+                }
+            ), control_scale=False, overlay=True,
+            name="Incidência dos raios"
+        )
+        
+        m = gdf_area_raios.explore(
+            m=m, 
+            popup=True, 
+            tooltip=["nome", "numero_de_raios", "media_intensidade", "raio_mais_intenso", "media_precisao"],
+            column="numero_de_raios",
+            cmap="YlOrRd",
+            style_kwds=dict(
+                fillOpacity=0.4,
+                weight=2,
+                color="#333333"
+            ),
+            legend=True,
+            name="Área de raios"
+        )
+
+        m = gdf_estacoes.explore(
+            m=m,
+            tooltip=['lat', 'lon', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
+            marker_type='marker',
+            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(24, 24), z_index_offset=1000),
+            style_kwds=dict(
+                style_function=lambda x: {
+                    "html": f"""<div style="position: absolute;font-size: 48px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px  black;">
+                        <i class="fa fa-satellite-dish"></i>
+                    </div>"""
+                }
+            ),
+            name="Estações"
+        )
+
+
+
+
+        LayerControl().add_to(m)
+
         mapa_html = m._repr_html_()
 
         return HTMLResponse(content=mapa_html)
+    return "nenhum dado fornecido"  
+
+
+@app.get("/raiosRegiaoGeojson", operation_id="raios_geojson")
+async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
+
+    if id_estacao is None:
+        exit
+    else:
+        con.execute(QUERIES["pontos_estacoes"], [id_estacao])
+        con.execute(QUERIES["raios"], [id_estacao])
+        con.execute(QUERIES["area_raios"], [id_estacao])
+
+
+        with open("geometria_estacoes.geojson") as f:
+            arquivoEstacoes = geojson.load(f)
+        with open("geometria_raios.geojson") as f:
+            arquivoRaios = geojson.load(f)
+        with open("geometria_area_raios.geojson") as f:
+            arquivoAreaRaios = geojson.load(f)
+
+        if not arquivoEstacoes['features']:
+            return "Nenhuma estação com o id fornecido"
+        if not arquivoRaios['features']:
+            return "Nenhum raio na região selecionada"
+
+
+        return {"Dados_Estações": arquivoEstacoes, "InfoGeral_raios": arquivoAreaRaios, "Dados_Raios": arquivoRaios}
     
     return "nenhum dado fornecido"  
+
+
+
+
 
 """
 @app.get("/listaDeDados")
@@ -331,6 +430,8 @@ mcp = FastApiMCP(
         "listar_sensores",
         "info_estacoes",
         "info_sensores",
+        "raios_geojson",
+        "plotagem_mapa"
     ],
 )
 mcp.mount_http()
@@ -338,4 +439,4 @@ mcp.mount_http()
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
