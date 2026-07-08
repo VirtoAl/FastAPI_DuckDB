@@ -82,14 +82,14 @@ COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, area
          CASE
             WHEN peak_current <= 0 THEN 'Raio Comum'
             WHEN peak_current > 0 THEN 'Raio Nuvem-a-Nuvem'
-            END AS Status_Raio FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+            END AS Status_Raio FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05),areaDesconhecida.the_elipsegeom) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
 -- name: pontos_estacoes
 COPY (SELECT DISTINCT estacao.id as estacao_id, estacao.nome, estacao.longitude as lon, estacao.latitude as lat, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618'), estacao.altitude, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, estacao.classificacao, estacao.inicio_operacao, estacao.fim_operacao
 FROM estacao LEFT JOIN orgao on orgao.id = estacao.orgao_id
 LEFT JOIN tipo_estacao on estacao.tipo_estacao_id = tipo_estacao.id 
 LEFT JOIN tipo_coleta on estacao.tipo_coleta_id = tipo_coleta.id
-LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+LEFT JOIN areaDesconhecida ON ST_Contains(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05),areaDesconhecida.the_elipsegeom) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
 -- name: area_raios
-COPY (SELECT count(areaDesconhecida.time_tick) as numero_de_raios, ST_MakeEnvelope(min(areaDesconhecida.lon) , min(areaDesconhecida.lat), max(areaDesconhecida.lon), max(areaDesconhecida.lat))::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude)) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_area_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+COPY (SELECT ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05)::GEOMETRY('EPSG:4618'), (SELECT COUNT(*) FROM areaDesconhecida WHERE ST_Contains(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.1), areaDesconhecida.the_elipsegeom)) as numero_de_raios FROM estacao WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_area_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON )

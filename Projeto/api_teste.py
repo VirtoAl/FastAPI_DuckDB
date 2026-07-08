@@ -276,7 +276,6 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
         if gdf_raios['geometry'].isna().all():
             return "Nenhum raio na região selecionada"
 
-        # Mapeamento de cores
         color_map = {
             'Leve': 'yellow',
             'Média': 'red',
@@ -290,7 +289,7 @@ async def raios_regiao(id_estacao: Annotated[list[int], Query()]):
             marker_kwds=dict(icon=folium.DivIcon(), z_index_offset=100),
             style_kwds=dict(
                 style_function=lambda x: {
-                    "html": f"""<div style="position: absolute;font-size: 24px; color: {color_map.get(x['properties']['Intensidade_do_Raio'], 'yellow')}; text-shadow: 2px 2px 2px black;">
+                    "html": f"""<div style="position: absolute;font-size: 24px; color: {color_map.get(x['properties']['Intensidade_do_Raio'])}; text-shadow: 2px 2px 2px black;">
                         <i class="fa fa-bolt"></i>
                     </div>"""
                 }

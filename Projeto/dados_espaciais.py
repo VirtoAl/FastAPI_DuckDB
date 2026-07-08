@@ -4,6 +4,7 @@ import time
 import webbrowser
 import os
 import geopandas as gpd
+from folium import LayerControl
 # from lonboard import Map, SolidPolygonLayer
 # from IPython.display import display
 
@@ -135,15 +136,20 @@ print(f"tempo final: {(time.time() - tempo)}")
 
 # con.sql("SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom::GEOMETRY('EPSG:4618') FROM estacao JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))").show()
 
-con.sql("COPY (SELECT estacao.id, estacao.nome, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON )")
-con.sql("COPY (SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(areaDesconhecida.the_elipsegeom, ST_Point(estacao.longitude, estacao.latitude))) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON )")
+con.sql("COPY (SELECT estacao.id, estacao.nome, ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.1)::GEOMETRY('EPSG:4618'), (SELECT COUNT(*) FROM areaDesconhecida WHERE ST_Intersects(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.1), areaDesconhecida.the_elipsegeom)) as num_raios FROM estacao WHERE estacao.id = 26565232) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON )")
+con.sql("COPY (SELECT areaDesconhecida.time_tick, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.the_elipsegeom::GEOMETRY('EPSG:4618') FROM estacao LEFT JOIN areaDesconhecida ON ST_Intersects(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.1),areaDesconhecida.the_elipsegeom) WHERE estacao.id = 26565232) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON )")
+
+# con.sql("COPY (SELECT ST_BuildArea(the_elipsegeom)::GEOMETRY('EPSG:4618') FROM areaDesconhecida LIMIT 1) to 'geometria_estacoes.geojson' (FORMAT GDAL, DRIVER GeoJSON )")
 
 gdf_estacoes = gpd.read_file("geometria_estacoes.geojson")
 gdf_raios = gpd.read_file("geometria_raios.geojson")
 
 
-m = gdf_raios.explore(popup=True, cmap="Set1", tooltip=['time_tick', 'lon', 'lat'], style_kwds=dict(color="green"), name="Areas de incidência de raio")
-gdf_estacoes.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Estações")
+m = gdf_estacoes.explore(popup=True, cmap="Set1", style_kwds=dict(color="green"), name="Areas da Estação")
+gdf_raios.explore(m=m, color="red", marker_kwds=dict(radius=2, fill=True), name="Raios")
+
+LayerControl().add_to(m)
+
 
 m.save(arquivotoGeojson)
 
