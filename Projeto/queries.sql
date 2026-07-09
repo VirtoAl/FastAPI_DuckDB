@@ -85,6 +85,24 @@ COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, area
             END AS Status_Raio
          FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05),areaDesconhecida.the_elipsegeom) WHERE estacao.id IN (SELECT unnest($1))) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
 
+-- name: raios_com_data
+COPY (SELECT areaDesconhecida.time_tick as Data_hora, areaDesconhecida.lon, areaDesconhecida.lat, areaDesconhecida.chi_square_value, areaDesconhecida.the_centrogeom::GEOMETRY('EPSG:4618'), max_rate_of_rise,
+         CASE
+            WHEN chi_square_value <=3 THEN 'Altamente Confiável'
+            WHEN chi_square_value >3 AND chi_square_value <=6 THEN 'Mediano'
+            ELSE 'Pouco Confiável'
+            END AS Precisao_coleta,
+         CASE 
+            WHEN abs(max_rate_of_rise) <= 10 THEN 'Leve'
+            WHEN abs(max_rate_of_rise) > 10 AND abs(max_rate_of_rise) < 25 THEN 'Média'
+            ELSE 'Alta'
+            END AS Intensidade_do_Raio,
+         CASE
+            WHEN peak_current <= 0 THEN 'Raio Comum'
+            WHEN peak_current > 0 THEN 'Raio Nuvem-a-Nuvem'
+            END AS Status_Raio
+         FROM estacao LEFT JOIN areaDesconhecida ON ST_Contains(ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05),areaDesconhecida.the_elipsegeom) WHERE estacao.id IN (SELECT unnest($1)) AND areaDesconhecida.time_tick >= $2 AND areaDesconhecida.time_tick <= $3) to 'geometria_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON );
+
 -- name: pontos_estacoes
 COPY (SELECT DISTINCT estacao.id as estacao_id, estacao.nome, estacao.longitude as lon, estacao.latitude as lat, ST_Point(estacao.longitude, estacao.latitude)::GEOMETRY('EPSG:4618'), estacao.altitude, orgao.nome as nome_orgao, tipo_estacao.descricao as tipo_estacao, tipo_coleta.descricao as tipo_coleta, estacao.classificacao, estacao.inicio_operacao, estacao.fim_operacao
 FROM estacao LEFT JOIN orgao on orgao.id = estacao.orgao_id
@@ -107,6 +125,27 @@ raios_por_estacao AS (
                ELSE 'Pouco Confiável'
                END AS media_precisao
     FROM estacoes_buffer e LEFT JOIN areaDesconhecida a ON ST_Contains(e.geometria, a.the_elipsegeom)
+    GROUP BY e.id, e.nome, e.geometria
+)
+SELECT  nome, geometria, numero_de_raios, media_intensidade, raio_mais_intenso, media_precisao
+FROM raios_por_estacao
+) to 'geometria_area_raios.geojson' (FORMAT GDAL, DRIVER GeoJSON )
+
+-- name: area_raios_com_data
+COPY (
+WITH estacoes_buffer AS (
+    SELECT  estacao.id, estacao.nome, ST_Buffer(ST_Point(estacao.longitude, estacao.latitude), 0.05)::GEOMETRY('EPSG:4618') as geometria
+    FROM estacao 
+    WHERE estacao.id IN (SELECT unnest($1))
+),
+raios_por_estacao AS (
+    SELECT e.id, e.nome, e.geometria, count(a.the_elipsegeom) as numero_de_raios, avg(a.max_rate_of_rise) as media_intensidade, max(a.max_rate_of_rise) as raio_mais_intenso,
+            CASE
+               WHEN avg(chi_square_value) <=3 THEN 'Altamente Confiável'
+               WHEN avg(chi_square_value) >3 AND avg(chi_square_value) <=6 THEN 'Mediano'
+               ELSE 'Pouco Confiável'
+               END AS media_precisao
+    FROM estacoes_buffer e LEFT JOIN areaDesconhecida a ON ST_Contains(e.geometria, a.the_elipsegeom) AND a.time_tick >= $2 AND a.time_tick <= $3
     GROUP BY e.id, e.nome, e.geometria
 )
 SELECT  nome, geometria, numero_de_raios, media_intensidade, raio_mais_intenso, media_precisao
