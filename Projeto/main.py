@@ -11,6 +11,7 @@ import geojson
 import folium
 from folium import LayerControl
 from contextlib import contextmanager
+import os
 
 def carregar_queries(caminho: str = "queries.sql"):
     queries: dict = {}
@@ -376,10 +377,17 @@ async def raios_regiao(
         with open("geometria_area_raios.geojson") as f:
             arquivoAreaRaios = geojson.load(f)
 
-        if not arquivoEstacoes['features']:
+        
+        estacoes_validas = [feature for feature in arquivoEstacoes['features'] 
+                          if feature.get('geometry') is not None and feature['geometry']]
+        raios_validos = [feature for feature in arquivoRaios['features'] 
+                        if feature.get('geometry') is not None and feature['geometry']]
+
+        if len(estacoes_validas) == 0:
             return "Nenhuma estação com o id fornecido"
-        if not arquivoRaios['features']:
+        if len(raios_validos) == 0:
             return "Nenhum raio na região selecionada"
+
 
 
         return {"Dados_Estações": arquivoEstacoes, "InfoGeral_raios": arquivoAreaRaios, "Dados_Raios": arquivoRaios}
@@ -388,8 +396,8 @@ async def raios_regiao(
 
 mcp = FastApiMCP(
     app,
-    name="Minha API com DuckDB",
-    description="Dados retirados do banco de dados do DuckDB serão demonstrados a seguir",
+    name="API de Sumarização do Banco de Dados da Simepar",
+    description="Servidor MCP que conversa com a API criada pelo FastAPI",
     include_operations=[
         "filtros",
         "listar_estacoes",

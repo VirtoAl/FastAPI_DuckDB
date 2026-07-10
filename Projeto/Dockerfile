@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install devin-cli
 
 COPY *.py /app/
+COPY queries.sql /app/
 
 RUN mkdir -p /app/dadosSimepar
 

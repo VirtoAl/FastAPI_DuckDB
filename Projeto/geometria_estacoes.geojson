@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "geometria_estacoes",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4618" } },
-"features": [
-{ "type": "Feature", "properties": { "estacao_id": 23684662, "nome": "DIADEMA - Centro", "lon": -46.625, "lat": -23.68, "altitude": null, "nome_orgao": "CEMADEN", "tipo_estacao": "Pluviométrica", "tipo_coleta": "Telemétrica", "classificacao": "", "inicio_operacao": "2014-07-25", "fim_operacao": null }, "geometry": { "type": "Point", "coordinates": [ -46.625, -23.68 ] } }
-]
-}
