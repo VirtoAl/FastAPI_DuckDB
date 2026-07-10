@@ -83,8 +83,8 @@ def inicializa_banco_de_dados():
 inicializa_banco_de_dados()
 
 app = FastAPI(
-    title="Minha API com DuckDB",
-    summary="Dados retirados do banco de dados do DuckDB serão demonstrados a seguir",
+    title="API de Sumarização do Banco de Dados da Simepar",
+    summary="Para análise e busca utilize os seguintes endpoints desenvolvidos",
 )
 
 

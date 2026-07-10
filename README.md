@@ -1,1 +1,0 @@
-# Testes com FastAPI e DuckDB
