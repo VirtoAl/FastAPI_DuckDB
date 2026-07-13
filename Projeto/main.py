@@ -2,7 +2,6 @@ import duckdb
 import time
 import numpy as np
 from fastapi import FastAPI, Query
-from fastapi.responses import HTMLResponse
 from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
@@ -12,6 +11,8 @@ import folium
 from folium import LayerControl
 from contextlib import contextmanager
 import os
+import webbrowser
+import tempfile
 
 def carregar_queries(caminho: str = "queries.sql"):
     queries: dict = {}
@@ -46,42 +47,6 @@ def get_db_connection():
         yield con
     finally:
         con.close()
-
-def inicializa_banco_de_dados():
-    """Inicializa as tabelas no banco de dados"""
-    with get_db_connection() as con:
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('dadosSimepar/data_0.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS estacao as SELECT * FROM read_parquet('dadosSimepar/estacao.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS operacao as SELECT * FROM read_parquet('dadosSimepar/operacao.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS orgao as SELECT * FROM read_parquet('dadosSimepar/orgao.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS qualidade as SELECT * FROM read_parquet('dadosSimepar/qualidade.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS sensor as SELECT * FROM read_parquet('dadosSimepar/sensor.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS tipo_coleta as SELECT * FROM read_parquet('dadosSimepar/tipo_coleta.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS tipo_estacao as SELECT * FROM read_parquet('dadosSimepar/tipo_estacao.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS unidade_medida as SELECT * FROM read_parquet('dadosSimepar/unidade_medida.parquet');"
-        )
-        con.execute(
-            "CREATE TABLE IF NOT EXISTS areaDesconhecida as SELECT * FROM read_parquet('dadosSimepar/dadosRaios/ano=2025/*/*/*.parquet')"
-        )
-
-inicializa_banco_de_dados()
 
 app = FastAPI(
     title="API de Sumarização do Banco de Dados da Simepar",
@@ -342,9 +307,14 @@ async def raios_regiao(
 
         LayerControl().add_to(m)
 
-        mapa_html = m._repr_html_()
+        temp_dir = tempfile.gettempdir()
+        mapa_file = os.path.join(temp_dir, f"mapa_raios_{id_estacao}.html")
+        m.save(mapa_file)
+        
+        webbrowser.open(f"file://{mapa_file}")
+        
+        return "Mapa gerado com sucesso"
 
-        return HTMLResponse(content=mapa_html)
     return "nenhum dado fornecido"  
 
 

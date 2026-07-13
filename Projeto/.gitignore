@@ -3,3 +3,4 @@ dados_estacao.*
 raiosFunde.*
 .geojson
 !.gitkeep
+*.geojson

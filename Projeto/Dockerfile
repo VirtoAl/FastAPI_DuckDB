@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3
 
 WORKDIR /app
 
@@ -7,9 +7,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY *.py /app/
 COPY queries.sql /app/
-
-RUN mkdir -p /app/dadosSimepar
+COPY dados_estacao.duckdb /app/
 
 EXPOSE 8000
 
-CMD [ "python3", "main.py" ]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python -c "import requests; requests.get('http://localhost:8000/docs', timeout=5)" || exit 1
+
+CMD ["python3", "main.py"]
