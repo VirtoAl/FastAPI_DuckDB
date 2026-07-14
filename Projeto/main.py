@@ -2,6 +2,7 @@ import duckdb
 import time
 import numpy as np
 from fastapi import FastAPI, Query
+from fastapi.responses import HTMLResponse
 from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
@@ -307,15 +308,12 @@ async def raios_regiao(
 
         LayerControl().add_to(m)
 
-        temp_dir = tempfile.gettempdir()
-        mapa_file = os.path.join(temp_dir, f"mapa_raios_{id_estacao}.html")
-        m.save(mapa_file)
+        mapa_html = m._repr_html_()
         
-        webbrowser.open(f"file://{mapa_file}")
-        
-        return "Mapa gerado com sucesso"
-
+        return HTMLResponse(content=mapa_html)
+    
     return "nenhum dado fornecido"  
+        
 
 
 @app.get("/raiosRegiaoGeojson", operation_id="raios_geojson")

@@ -1,32 +1,16 @@
-version: '3.8'
-
 services:
   api:
     build: .
     container_name: api-sumarizacao
     ports:
       - "8000:8000"
-    networks:
-      - mcp-network
     volumes:
-      - ./dados_estacao.duckdb:/app/dados_estacao.duckdb
-  devin:
-    image: cognitiondevin/devin:latest  # Imagem oficial do Devin
-    container_name: devin-mcp-client
-    depends_on:
-      - api
-    networks:
-      - mcp-network
+      # Volume para persistir credenciais do Devin
+      - devin-credentials:/root/.local/share/devin
+    # Configuração MCP atualizada para usar localhost dentro do container
     environment:
-      - MCP_SERVER_URL=http://api:8000/mcp
-    volumes:
-      # Monta configuração do Devin
-      - ./devin-config:/root/.config/devin
-      # Monta diretório de trabalho para projetos
-      - ./workspace:/workspace
-    # Pode precisar de comando específico para usar a configuração MCP
-    command: ["sh", "-c", "sleep 10 && devin --help"]
+      - MCP_SERVER_URL=http://localhost:8000/mcp
+      - DEVIN_PERMISSION_MODE=autonomous
 
-networks:
-  mcp-network:
-    driver: bridge
+volumes:
+  devin-credentials:

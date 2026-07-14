@@ -4,10 +4,15 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://cli.devin.ai/install.sh | bash || true
+
+ENV PATH="/root/.local/bin:${PATH}"
+
+COPY /.devin/config.json /app/.devin/
 COPY *.py /app/
 COPY queries.sql /app/
-COPY dados_estacao.duckdb /app/
 
 EXPOSE 8000
 
