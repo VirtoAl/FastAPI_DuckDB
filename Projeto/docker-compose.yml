@@ -5,12 +5,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Volume para persistir credenciais do Devin
-      - devin-credentials:/root/.local/share/devin
+      - /home/vitor.oliveira/Downloads/estudo/git-demo/Projeto/dados_estacao.duckdb:/app/dados_estacao.duckdb
     # Configuração MCP atualizada para usar localhost dentro do container
-    environment:
-      - MCP_SERVER_URL=http://localhost:8000/mcp
-      - DEVIN_PERMISSION_MODE=autonomous
 
-volumes:
-  devin-credentials:
