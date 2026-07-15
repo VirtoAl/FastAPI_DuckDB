@@ -2,7 +2,8 @@ import duckdb
 import time
 import numpy as np
 from fastapi import FastAPI, Query
-from fastapi.responses import HTMLResponse
+from fastapi.responses import RedirectResponse, FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from typing import Annotated
 from pydantic import BaseModel, Field
 from fastapi_mcp import FastApiMCP
@@ -53,6 +54,10 @@ app = FastAPI(
     title="API de Sumarização do Banco de Dados da Simepar",
     summary="Para análise e busca utilize os seguintes endpoints desenvolvidos",
 )
+
+# Monta diretório estático para servir os arquivos de mapa
+os.makedirs("static", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 class Info(BaseModel):
@@ -214,7 +219,7 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
         return {"Sensor:": sensor}
 
-@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
+@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa", response_class=HTMLResponse)
 async def raios_regiao(
     id_estacao: Annotated[list[int], Query()],
     data_inicio: Annotated[str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")] = None,
@@ -309,8 +314,33 @@ async def raios_regiao(
         LayerControl().add_to(m)
 
         mapa_html = m._repr_html_()
+
+
+        temp_dir = tempfile.gettempdir()
+        mapa_file = os.path.join(temp_dir, f"mapa_raios_{id_estacao}.html")
+        m.save(mapa_file)
         
-        return HTMLResponse(content=mapa_html)
+
+        target_url = "https://www.google.com"
+        
+        html_content = f"""
+        <html>
+            <body>
+                <p>O Swagger bloqueia redirecionamentos automáticos em nova aba.</p>
+                <!-- O target="_blank" garante a abertura da nova aba perfeitamente -->
+                <a href="{target_url}" target="_blank" style="
+                    padding: 10px 20px; 
+                    background-color: #007bff; 
+                    color: white; 
+                    text-decoration: none; 
+                    border-radius: 5px;
+                    font-family: sans-serif;
+                    display: inline-block;
+                ">Clique aqui para abrir em uma nova aba</a>
+            </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content)
     
     return "nenhum dado fornecido"  
         

@@ -13,6 +13,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 COPY /.devin/config.json /app/.devin/
 COPY *.py /app/
 COPY queries.sql /app/
+COPY AGENTS.md /app/
 
 EXPOSE 8000
 
