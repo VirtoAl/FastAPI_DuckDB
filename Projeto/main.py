@@ -211,7 +211,7 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
         return {"Sensor:": sensor}
 
-@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
+@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa", description="Para este endpoint, é necessário passar os parâmetos de querry diretamente ao path do localhost para o mapa interativo abrir")
 async def raios_regiao(
     id_estacao: Annotated[list[int], Query()],
     data_inicio: Annotated[str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")] = None,
