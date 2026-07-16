@@ -1,12 +1,12 @@
 # Prova de conceito FastAPI, FastMCP, DuckDB, Docker, Docker Compose
 
-#### Objetivo da Prova de conceito: Criar uma API RESTful cujo objetivo é analisar e fatorar os dados coletados pelas estações da Simepar para uma busca mais organizada e menos custosa o qual um agente de IA possa se comunicar com o servidor MCP, utilizar as tool com base nos endpoints da API, e retornar de forma eficiente ao usuário as diversas informações contidas na base de dados
+Objetivo da Prova de conceito: Criar uma API RESTful cujo objetivo é analisar e fatorar os dados coletados pelas estações da Simepar para uma busca mais organizada e menos custosa o qual um agente de IA possa se comunicar com o servidor MCP, utilizar as tool com base nos endpoints da API, e retornar de forma eficiente ao usuário as diversas informações contidas na base de dados
 
 #### Foram utilizadas as seguintes tecnologias para a realização do projeto
 
 ## FastAPI
 
-#### Tecnologia solicitada para o desenvolvimento da API visto sua integração inerte com o python na utilização de type hints, como fácil visualização de implementação de funcionalidades utilizando o Swagger UI na porta do host local <http://127.0.0.1:8000/docs>
+Tecnologia solicitada para o desenvolvimento da API visto sua integração inerte com o python na utilização de type hints, como fácil visualização de implementação de funcionalidades utilizando o Swagger UI na porta do host local <http://127.0.0.1:8000/docs>
 
 #### Os seguintes endpoints foram criados para a sumarização dos dados presente no Banco de Dados
 
@@ -37,8 +37,6 @@
 - `raiosRegiaoGeojson` solicita os mesmos parâmetros e retorna as mesmas informações, porém num arquivo Geojson.
   
 #### Vale notar que os dados de coleta de raio são todos exclusivamente referentes ao ano de 2025, e os dados de coleta gerais são referente ao período do dia 31/05/2026 à 11/06/2026
-
----
 
 ## Docker / Docker Compose
 
@@ -71,8 +69,6 @@ Com tudo configurado corretamente, utilizar o seguinte comando irá rodar o cont
 E para acesso do agente de IA, será necessário rodar o seguinte comando, o qual será especificado na seção seguinte
 
 `docker exec -it nome-do-container bash`
-
----
 
 ## FastMCP
 
