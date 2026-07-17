@@ -72,7 +72,7 @@ E para acesso do agente de IA, será necessário rodar o seguinte comando, o qua
 
 ## FastMCP
 
-Tecnologia utilizada para a criação do servidor MCP visto que é o principal framework para desenvolvimento em Python. Utilizando da biblioteca `from fastapi_mcp import FastApiMCP` que integra as duas tecnologias a deixar o desenvolvimento mais simplificada
+Tecnologia utilizada para a criação do servidor MCP visto que é o principal framework para desenvolvimento em Python. Utilizando da biblioteca `from fastapi_mcp import FastApiMCP` que integra as duas tecnologias a deixar o desenvolvimento mais simplificado
 
 Devin CLI foi utilizado como agente de IA para os testes do servidor MCP, configurado para atuar na porta 8000/mcp da aplicação.
 Os endpoints foram desenvolvidos com respostas "repetitivas" para que dependendo da solicitação do usuário, o cliente da porta mcp saiba qual tool utilizar sem a necessidade de percorrer por todo o banco de dados instanciado pelo DuckDB
@@ -89,10 +89,10 @@ Recomendação de primeiro prompt:
 
 ## DuckDB
 
-Base de dados a ser instanciada pela aplicação, permitindo buscas e manipulação a partir de querys SQL de maneira rápida e eficaz por conta de sua estrutura colunar, sendo uma opção desejada para uma aplicação cujo objetivo é filtrar milhares de dados arquivos .parquet
+Base de dados a ser instanciada pela aplicação, permitindo a busca de dados a partir de querys SQL de maneira rápida e eficaz por conta de sua estrutura colunar, sendo uma opção desejada para uma aplicação cujo objetivo é filtrar milhares de arquivos do tipo _.parquet_
 
 #### Conforme a demanda
 
-foi utilizado operações query do tipo `JOIN` visto o objetivo de sumarização dos dados, aonde a concatenação de dados .parquet se mostra necessária para visualização dos dados de maneira organizada para o uso do usuário na API.
+foi utilizado operações query do tipo _JOIN_ visto o objetivo de sumarização dos dados, aonde a concatenação de dados _.parquet_ se mostra necessária para visualização dos dados de maneira organizada para o uso do usuário na API.
 
-Foi utilizada suas funções padrões para a maior parte das queries sql, como também da biblioteca SPATIAL para manipulação de dados geográficos. É visto nos endpoints `raiosRegiaoPlotagem`, e `raiosRegiaoGeojson`, com a criação da área de instância de raios ao redor da estação, como na filtragem para os raios que estão somente dentro da região da estação especificada serem contabilizados, e instanciados pelo mapa interativo, ou, pelo arquivo Geojson
+Foi utilizada suas funções padrões para a maior parte das queries sql, como também da biblioteca SPATIAL para manipulação de dados geográficos. É visto nos endpoints `raiosRegiaoPlotagem`, e `raiosRegiaoGeojson`, com a criação da área de instância de raios ao redor da estação, como na filtragem para os raios que estão somente dentro da região da estação especificada sejam contabilizados, e instanciados pelo mapa interativo, ou, pelo arquivo Geojson
