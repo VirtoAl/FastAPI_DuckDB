@@ -44,7 +44,7 @@ Para o teste unitário foi utilizado o Docker como tecnologia visto sua capacida
 
 de acordo com as propriedades ditas do docker, foi utilizado no Dockerfile `RUN curl -fsSL https://cli.devin.ai/install.sh | bash || true` para a instalação do agente de IA Devin CLI dentro da imagem visto que não há nenhuma imagem oficial da Cognition para a implementação por pull da imagem
 
-A imagem docker está disponível para pull pelo DockerHub no seguinte diretório
+A imagem docker está disponível para pull pelo DockerHub no seguinte diretório (**Necessário pedir acesso pelo dockerHub**)
 
 <https://hub.docker.com/r/virtoal/fastapi-simepar>
 
