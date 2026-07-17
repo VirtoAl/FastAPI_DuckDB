@@ -11,7 +11,7 @@ import geojson
 import folium
 from folium import LayerControl
 from contextlib import contextmanager
-import os
+
 
 def carregar_queries(caminho: str = "queries.sql"):
     queries: dict = {}
@@ -36,19 +36,9 @@ def carregar_queries(caminho: str = "queries.sql"):
 
 QUERIES = carregar_queries()
 
-@contextmanager
-def get_db_connection():
-    """Context manager para criar conexões do DuckDB"""
-    con = duckdb.connect("dados_estacao.duckdb")
-    con.sql("INSTALL spatial")
-    con.sql("LOAD spatial")
-    try:
-        yield con
-    finally:
-        con.close()
-
+# Criação da tabela de dados dados_estacao.duckdb
+"""
 def inicializa_banco_de_dados():
-    """Inicializa as tabelas no banco de dados"""
     with get_db_connection() as con:
         con.execute(
             "CREATE TABLE IF NOT EXISTS data_0 as SELECT * FROM read_parquet('dadosSimepar/data_0.parquet');"
@@ -82,6 +72,20 @@ def inicializa_banco_de_dados():
         )
 
 inicializa_banco_de_dados()
+"""
+
+
+@contextmanager
+def get_db_connection():
+    """Context manager para criar conexões do DuckDB"""
+    con = duckdb.connect("dados_estacao.duckdb")
+    con.sql("INSTALL spatial")
+    con.sql("LOAD spatial")
+    try:
+        yield con
+    finally:
+        con.close()
+
 
 app = FastAPI(
     title="API de Sumarização do Banco de Dados da Simepar",
@@ -192,7 +196,9 @@ async def filtro_de_dados_geral(
 @app.get("/listaEstacoes", operation_id="listar_estacoes")
 async def estacoes():
     with get_db_connection() as con:
-        df = con.execute("SELECT id, nome, latitude, longitude FROM estacao ORDER BY nome").df()
+        df = con.execute(
+            "SELECT id, nome, latitude, longitude FROM estacao ORDER BY nome"
+        ).df()
         df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
         dados = df.to_dict("records")
 
@@ -202,7 +208,9 @@ async def estacoes():
 @app.get("/listaSensores", operation_id="listar_sensores")
 async def sensores():
     with get_db_connection() as con:
-        df = con.execute("SELECT id, descricao, nome_curto FROM sensor ORDER BY id").df()
+        df = con.execute(
+            "SELECT id, descricao, nome_curto FROM sensor ORDER BY id"
+        ).df()
         df.replace({np.nan: None}, inplace=True)
         dados = df.to_dict("records")
 
@@ -248,11 +256,20 @@ async def info_sensor(filtroSensor: Annotated[str, Query()]):
 
         return {"Sensor:": sensor}
 
-@app.get("/raiosRegiaoPlotagem", operation_id="plotagem_mapa")
-async def raios_regiao(
+
+@app.get(
+    "/raiosRegiaoPlotagem",
+    operation_id="plotagem_mapa",
+    description="Para este endpoint, é necessário passar os parâmetos de querry diretamente ao path do localhost para o mapa interativo abrir",
+)
+async def raios_regiao_mapa(
     id_estacao: Annotated[list[int], Query()],
-    data_inicio: Annotated[str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")] = None,
-    data_fim: Annotated[str | None, Query(description="Data final no formato YYYY-MM-DD HH:MM:SS")] = None
+    data_inicio: Annotated[
+        str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")
+    ] = None,
+    data_fim: Annotated[
+        str | None, Query(description="Data final no formato YYYY-MM-DD HH:MM:SS")
+    ] = None,
 ):
 
     if id_estacao is None:
@@ -260,11 +277,15 @@ async def raios_regiao(
     else:
         with get_db_connection() as con:
             con.execute(QUERIES["pontos_estacoes"], [id_estacao])
-            
+
             # Usa query com filtro de data se as datas forem fornecidas
             if data_inicio and data_fim:
-                con.execute(QUERIES["raios_com_data"], [id_estacao, data_inicio, data_fim])
-                con.execute(QUERIES["area_raios_com_data"], [id_estacao, data_inicio, data_fim])
+                con.execute(
+                    QUERIES["raios_com_data"], [id_estacao, data_inicio, data_fim]
+                )
+                con.execute(
+                    QUERIES["area_raios_com_data"], [id_estacao, data_inicio, data_fim]
+                )
             else:
                 con.execute(QUERIES["raios"], [id_estacao])
                 con.execute(QUERIES["area_raios"], [id_estacao])
@@ -279,80 +300,104 @@ async def raios_regiao(
         gdf_raios = gpd.read_file(arquivoRaios)
         gdf_estacoes = gpd.read_file(arquivoEstacaoes)
         gdf_area_raios = gpd.read_file(arquivoAreaRaios)
-        
 
-        if gdf_estacoes['geometry'].isna().all():
+        if gdf_estacoes["geometry"].isna().all():
             return "Nenhuma estação com o id fornecido"
-        if gdf_raios['geometry'].isna().all():
+        if gdf_raios["geometry"].isna().all():
             return "Nenhum raio na região selecionada"
 
-        color_map = {
-            'Leve': 'yellow',
-            'Média': 'red',
-            'Alta': 'darkred'
-        }
+        color_map = {"Leve": "yellow", "Média": "red", "Alta": "darkred"}
 
         m = gdf_raios.explore(
             popup=True,
-            tooltip=['Data_hora', 'lat', 'lon', 'Precisao_coleta', 'chi_square_value', 'Status_Raio','Intensidade_do_Raio', 'max_rate_of_rise'],
-            marker_type='marker',
-            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(6, 6)), z_index_offset=100),
+            tooltip=[
+                "Data_hora",
+                "lat",
+                "lon",
+                "Precisao_coleta",
+                "chi_square_value",
+                "Status_Raio",
+                "Intensidade_do_Raio",
+                "max_rate_of_rise",
+            ],
+            marker_type="marker",
+            marker_kwds=dict(
+                icon=folium.DivIcon(icon_anchor=(6, 6)), z_index_offset=100
+            ),
             style_kwds=dict(
                 style_function=lambda x: {
-                    "html": f"""<div style="position: absolute;font-size: 12px; color: {color_map.get(x['properties']['Intensidade_do_Raio'])}; text-shadow: 2px 2px 2px black;">
+                    "html": f"""<div style="position: absolute;font-size: 12px; color: {color_map.get(x["properties"]["Intensidade_do_Raio"])}; text-shadow: 2px 2px 2px black;">
                         <i class="fa fa-bolt"></i>
                     </div>"""
                 }
-            ), control_scale=False, overlay=True,
-            name="Incidência dos raios"
+            ),
+            control_scale=False,
+            overlay=True,
+            name="Incidência dos raios",
         )
-        
+
         m = gdf_area_raios.explore(
-            m=m, 
-            popup=True, 
-            tooltip=["nome", "numero_de_raios", "media_intensidade", "raio_mais_intenso", "media_precisao"],
+            m=m,
+            popup=True,
+            tooltip=[
+                "nome",
+                "numero_de_raios",
+                "media_intensidade",
+                "raio_mais_intenso",
+                "media_precisao",
+            ],
             column="numero_de_raios",
             cmap="YlOrRd",
-            style_kwds=dict(
-                fillOpacity=0.4,
-                weight=2,
-                color="#333333"
-            ),
+            style_kwds=dict(fillOpacity=0.4, weight=2, color="#333333"),
             legend=True,
-            name="Área de raios"
+            name="Área de raios",
         )
 
         m = gdf_estacoes.explore(
             m=m,
-            tooltip=['lat', 'lon', 'estacao_id', 'inicio_operacao', 'fim_operacao', 'nome', 'nome_orgao', 'tipo_coleta', 'tipo_estacao'],
-            marker_type='marker',
-            marker_kwds=dict(icon=folium.DivIcon(icon_anchor=(24, 24)), z_index_offset=1000),
+            tooltip=[
+                "lat",
+                "lon",
+                "estacao_id",
+                "inicio_operacao",
+                "fim_operacao",
+                "nome",
+                "nome_orgao",
+                "tipo_coleta",
+                "tipo_estacao",
+            ],
+            marker_type="marker",
+            marker_kwds=dict(
+                icon=folium.DivIcon(icon_anchor=(24, 24)), z_index_offset=1000
+            ),
             style_kwds=dict(
                 style_function=lambda x: {
-                    "html": f"""<div style="position: absolute;font-size: 48px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px  black;">
+                    "html": """<div style="position: absolute;font-size: 48px; color: blue; opacity: 0.7; text-shadow: 2px 2px 2px  black;">
                         <i class="fa fa-satellite-dish"></i>
                     </div>"""
                 }
             ),
-            name="Estações"
+            name="Estações",
         )
-
-
-
 
         LayerControl().add_to(m)
 
         mapa_html = m._repr_html_()
 
         return HTMLResponse(content=mapa_html)
-    return "nenhum dado fornecido"  
+
+    return "nenhum dado fornecido"
 
 
 @app.get("/raiosRegiaoGeojson", operation_id="raios_geojson")
-async def raios_regiao(
+async def raios_regiao_geojson(
     id_estacao: Annotated[list[int], Query()],
-    data_inicio: Annotated[str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")] = None,
-    data_fim: Annotated[str | None, Query(description="Data final no formato YYYY-MM-DD HH:MM:SS")] = None
+    data_inicio: Annotated[
+        str | None, Query(description="Data inicial no formato YYYY-MM-DD HH:MM:SS")
+    ] = None,
+    data_fim: Annotated[
+        str | None, Query(description="Data final no formato YYYY-MM-DD HH:MM:SS")
+    ] = None,
 ):
 
     if id_estacao is None:
@@ -360,15 +405,18 @@ async def raios_regiao(
     else:
         with get_db_connection() as con:
             con.execute(QUERIES["pontos_estacoes"], [id_estacao])
-            
+
             # Usa query com filtro de data se as datas forem fornecidas
             if data_inicio and data_fim:
-                con.execute(QUERIES["raios_com_data"], [id_estacao, data_inicio, data_fim])
-                con.execute(QUERIES["area_raios_com_data"], [id_estacao, data_inicio, data_fim])
+                con.execute(
+                    QUERIES["raios_com_data"], [id_estacao, data_inicio, data_fim]
+                )
+                con.execute(
+                    QUERIES["area_raios_com_data"], [id_estacao, data_inicio, data_fim]
+                )
             else:
                 con.execute(QUERIES["raios"], [id_estacao])
                 con.execute(QUERIES["area_raios"], [id_estacao])
-
 
         with open("geometria_estacoes.geojson") as f:
             arquivoEstacoes = geojson.load(f)
@@ -377,22 +425,30 @@ async def raios_regiao(
         with open("geometria_area_raios.geojson") as f:
             arquivoAreaRaios = geojson.load(f)
 
-        
-        estacoes_validas = [feature for feature in arquivoEstacoes['features'] 
-                          if feature.get('geometry') is not None and feature['geometry']]
-        raios_validos = [feature for feature in arquivoRaios['features'] 
-                        if feature.get('geometry') is not None and feature['geometry']]
+        estacoes_validas = [
+            feature
+            for feature in arquivoEstacoes["features"]
+            if feature.get("geometry") is not None and feature["geometry"]
+        ]
+        raios_validos = [
+            feature
+            for feature in arquivoRaios["features"]
+            if feature.get("geometry") is not None and feature["geometry"]
+        ]
 
         if len(estacoes_validas) == 0:
             return "Nenhuma estação com o id fornecido"
         if len(raios_validos) == 0:
             return "Nenhum raio na região selecionada"
 
+        return {
+            "Dados_Estações": arquivoEstacoes,
+            "InfoGeral_raios": arquivoAreaRaios,
+            "Dados_Raios": arquivoRaios,
+        }
 
+    return "nenhum dado fornecido"
 
-        return {"Dados_Estações": arquivoEstacoes, "InfoGeral_raios": arquivoAreaRaios, "Dados_Raios": arquivoRaios}
-    
-    return "nenhum dado fornecido"  
 
 mcp = FastApiMCP(
     app,
@@ -405,7 +461,7 @@ mcp = FastApiMCP(
         "info_estacoes",
         "info_sensores",
         "raios_geojson",
-        "plotagem_mapa"
+        "plotagem_mapa",
     ],
 )
 mcp.mount_http()
@@ -413,4 +469,4 @@ mcp.mount_http()
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

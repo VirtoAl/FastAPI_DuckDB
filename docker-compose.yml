@@ -1,0 +1,9 @@
+services:
+  api:
+    image: virtoal/fastapi-simepar:1.0.6
+    container_name: fastapi-simepar
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./dados_estacao.duckdb:/app/dados_estacao.duckdb
+
