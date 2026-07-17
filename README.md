@@ -1,6 +1,6 @@
 # Prova de conceito FastAPI, FastMCP, DuckDB, Docker, Docker Compose
 
-Objetivo da Prova de conceito: Criar uma API RESTful cujo objetivo é analisar e fatorar os dados coletados pelas estações da Simepar para uma busca mais organizada e menos custosa o qual um agente de IA possa se comunicar com o servidor MCP, utilizar as tool com base nos endpoints da API, e retornar de forma eficiente ao usuário as diversas informações contidas na base de dados
+Objetivo da Prova de conceito: Criar uma API RESTful cujo objetivo é analisar e fatorar os dados coletados pelas estações da Simepar para uma busca mais organizada e menos custosa o qual um agente de IA possa se comunicar com o servidor MCP, utilizar as tools com base nos endpoints da API, e retornar de forma eficiente ao usuário as diversas informações contidas na base de dados
 
 #### Foram utilizadas as seguintes tecnologias para a realização do projeto
 
@@ -25,7 +25,7 @@ Tecnologia solicitada para o desenvolvimento da API visto sua integração inert
 
 #### Explicação detalhada de cada endpoint e seu propósito
 
-- `/filtros` solicita 3 parâmetros de query [horário, nome curto do sensor, id da estação] e retorna os dados coletados filtrados pela solicitação da querry
+- `/filtros` solicita 3 parâmetros de query [horário, nome curto do sensor, id da estação] e retorna os dados coletados filtrados pela solicitação da query
 - `listaEstacoes` retorna sem necessidade de parametrização a lista de todas as estações, fornecendo como resposta um Json com as informações de [id, nome, latitude, longitude]
 - `listaSensores` retorna sem necessidade de parametrização a lista de todos os sensores, fornecendo como resposta um Json com as informações de [id, descricao, nome_curto]
 - `infoEstacao` solicita 1 parâmetro de query [id_estacao] e retorna todas as informações da estação fornecida
@@ -64,7 +64,7 @@ Vale salientar que os dados utilizados estão localizados na máquina para fim d
 
 Com tudo configurado corretamente, utilizar o seguinte comando irá rodar o contêiner com a aplicação
 
-`docker compose up`
+`docker compose up -d`
 
 E para acesso do agente de IA, será necessário rodar o seguinte comando, o qual será especificado na seção seguinte
 
@@ -72,12 +72,12 @@ E para acesso do agente de IA, será necessário rodar o seguinte comando, o qua
 
 ## FastMCP
 
-Tecnologia utilizada para a criação do servidor MCP visto que é o principal framework para desenvolvimento em Python. Utilizando da biblioteca `from fastapi_mcp import FastApiMCP` que integra as duas tecnologias a deixar o desenvolvimento mais simplificada
+Tecnologia utilizada para a criação do servidor MCP visto que é o principal framework para desenvolvimento em Python. Utilizando da biblioteca `from fastapi_mcp import FastApiMCP` que integra as duas tecnologias a deixar o desenvolvimento mais simplificado
 
 Devin CLI foi utilizado como agente de IA para os testes do servidor MCP, configurado para atuar na porta 8000/mcp da aplicação.
 Os endpoints foram desenvolvidos com respostas "repetitivas" para que dependendo da solicitação do usuário, o cliente da porta mcp saiba qual tool utilizar sem a necessidade de percorrer por todo o banco de dados instanciado pelo DuckDB
 
-Para fazer o uso do Devin CLI dentro do container de maneira apropriada, após rodar o container da API, deve se utilizar o comando `docker exec -it nome_do_container bash` para abrir a linha de comando dentro do container, e conseguir utilizar da pre-configuração vinda junta com a imagem personalizada ao Devin Cli.
+Para fazer o uso do Devin CLI dentro do container de maneira apropriada, após rodar o contêiner da API, deve se utilizar o comando `docker exec -it nome_do_container bash` para abrir a linha de comando dentro do contêiner, e conseguir utilizar a pré-configuração vinda junta da imagem personalizada ao Devin Cli.
 
 Após a entrada na linha de comando, apenas digite `devin`, que irá solicitar seu token de autenticação pessoal para uso próprio, basta seguir as instruções fornecidas pelo próprio Devin CLI. Após isto, o devin já estará conectado com o servidor MCP pronto para uso.
 
@@ -89,10 +89,10 @@ Recomendação de primeiro prompt:
 
 ## DuckDB
 
-Base de dados a ser instanciada pela aplicação, permitindo buscas e manipulação a partir de querys SQL de maneira rápida e eficaz por conta de sua estrutura colunar, sendo uma opção desejada para uma aplicação cujo objetivo é filtrar milhares de dados arquivos .parquet
+Base de dados a ser instanciada pela aplicação, permitindo a busca de dados a partir de querys SQL de maneira rápida e eficaz por conta de sua estrutura colunar, sendo uma opção desejada para uma aplicação cujo objetivo é filtrar milhares de arquivos do tipo _.parquet_
 
 #### Conforme a demanda
 
-foi utilizado operações query do tipo `JOIN` visto o objetivo de sumarização dos dados, aonde a concatenação de dados .parquet se mostra necessária para visualização dos dados de maneira organizada para o uso do usuário na API.
+foi utilizado operações query do tipo _JOIN_ visto o objetivo de sumarização dos dados, aonde a concatenação de dados _.parquet_ se mostra necessária para visualização dos dados de maneira organizada para o uso do usuário na API.
 
-Foi utilizada suas funções padrões para a maior parte das queries sql, como também da biblioteca SPATIAL para manipulação de dados geográficos. É visto nos endpoints `raiosRegiaoPlotagem`, e `raiosRegiaoGeojson`, com a criação da área de instância de raios ao redor da estação, como na filtragem para os raios que estão somente dentro da região da estação específicada serem contabilizados, e instanciados pelo mapa interativo, ou, pelo arquivo Geojson
+Foi utilizada suas funções padrões para a maior parte das queries sql, como também da biblioteca SPATIAL para manipulação de dados geográficos. É visto nos endpoints `raiosRegiaoPlotagem`, e `raiosRegiaoGeojson`, com a criação da área de instância de raios ao redor da estação, como na filtragem para os raios que estão somente dentro da região da estação especificada sejam contabilizados, e instanciados pelo mapa interativo, ou, pelo arquivo Geojson
