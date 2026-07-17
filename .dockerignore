@@ -1,4 +1,3 @@
-dadosSimepar/
 __pycache__/
 *.pyc
 *.pyo
@@ -18,3 +17,7 @@ build/
 *.swp
 *.swo
 *.geojson
+*.duckdb
+*.yml
+Dockerfile
+README.md

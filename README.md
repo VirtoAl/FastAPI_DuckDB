@@ -49,6 +49,7 @@ A imagem docker está disponível para pull pelo DockerHub no seguinte diretóri
 <https://hub.docker.com/r/virtoal/fastapi-simepar>
 
 Para a realização adequada do Contêiner, é necessário especificar no `docker-compose.yml` as seguintes especificações
+
 ```
 services:
   api:
@@ -81,11 +82,9 @@ Para fazer o uso do Devin CLI dentro do container de maneira apropriada, após r
 
 Após a entrada na linha de comando, apenas digite `devin`, que irá solicitar seu token de autenticação pessoal para uso próprio, basta seguir as instruções fornecidas pelo próprio Devin CLI. Após isto, o devin já estará conectado com o servidor MCP pronto para uso.
 
-Recomendação de primeiro prompt: 
+Recomendação de primeiro prompt:
 
 `Me forneça uma visão geral do que a aplicação é capaz de fazer`
-
----
 
 ## DuckDB
 
@@ -96,3 +95,11 @@ Base de dados a ser instanciada pela aplicação, permitindo a busca de dados a 
 foi utilizado operações query do tipo _JOIN_ visto o objetivo de sumarização dos dados, aonde a concatenação de dados _.parquet_ se mostra necessária para visualização dos dados de maneira organizada para o uso do usuário na API.
 
 Foi utilizada suas funções padrões para a maior parte das queries sql, como também da biblioteca SPATIAL para manipulação de dados geográficos. É visto nos endpoints `raiosRegiaoPlotagem`, e `raiosRegiaoGeojson`, com a criação da área de instância de raios ao redor da estação, como na filtragem para os raios que estão somente dentro da região da estação especificada sejam contabilizados, e instanciados pelo mapa interativo, ou, pelo arquivo Geojson
+
+## Ruff / Bandit
+
+Ruff é um _linter_ / formatador de código, ou seja, é uma ferramenta que trata de erros de sintaxe, potenciais _bugs_ , como também padroniza o visual geral do projeto para melhores práticas de código. Bandit é uma ferramenta designada à encontrar falhas de segurança dentro do código, necessário para um código otimizado e seguro.
+
+Executado o `ruff check` para verificação de melhores práticas de código e `ruff format` para formatação do código para melhor visualização do conteúdo
+
+Executado o `bandit -r .` para verificação de furos de segurança dentro do código, o qual foi tratado principalmente para possíveis SQL Injection encontradas
