@@ -1,4 +1,4 @@
-# Prova de conceito FastAPI, FastMCP, DuckDB, Docker, Docker Compose
+# Prova de conceito FastAPI, FastMCP, DuckDB, Docker / Docker Compose, Ruff / Bandit 
 
 Objetivo da Prova de conceito: Criar uma API RESTful cujo objetivo é analisar e fatorar os dados coletados pelas estações da Simepar para uma busca mais organizada e menos custosa o qual um agente de IA possa se comunicar com o servidor MCP, utilizar as tools com base nos endpoints da API, e retornar de forma eficiente ao usuário as diversas informações contidas na base de dados
 
@@ -53,7 +53,7 @@ Para a realização adequada do Contêiner, é necessário especificar no `docke
 ```
 services:
   api:
-    image: virtoal/fastapi-simepar:1.0.3
+    image: virtoal/fastapi-simepar:1.0.6
     container_name: nome-do-container
     ports:
       - "8000:8000"
