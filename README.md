@@ -53,7 +53,7 @@ Para a realização adequada do Contêiner, é necessário especificar no `docke
 ```
 services:
   api:
-    image: virtoal/fastapi-simepar:1.0.7
+    image: virtoal/fastapi-simepar:1.0.8
     container_name: nome-do-container
     ports:
       - "8000:8000"
@@ -61,7 +61,7 @@ services:
       - ./dados_estacao.duckdb:/app/dados_estacao.duckdb
 ```
 
-Vale salientar que os dados utilizados estão localizados na máquina para fim de testes. Para a implementação completa do banco de dados seria necessário acesso ao AWS e referenciar ao volume `/app/dados_estacao.duckdb` como mostrado acima.
+#### Vale salientar que os dados utilizados estão localizados na máquina para fim de testes. Para a implementação completa do banco de dados seria necessário acesso a AWS e refatorar o docker-compose sem a necessidade de conectá-lo a um volume como mostrado acima. Ou, alimentar o banco de dados da mesma forma que é feita na função `inicializa_banco_de_dados()` chamada dentro do `main.py`
 
 Com tudo configurado corretamente, utilizar o seguinte comando irá rodar o contêiner com a aplicação
 

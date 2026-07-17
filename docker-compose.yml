@@ -1,6 +1,6 @@
 services:
   api:
-    image: virtoal/fastapi-simepar:1.0.7
+    image: virtoal/fastapi-simepar:1.0.8
     container_name: fastapi-simepar
     ports:
       - "8000:8000"

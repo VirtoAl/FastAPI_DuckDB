@@ -179,7 +179,7 @@ async def filtro_de_dados_geral(
 
         colunas = ", ".join(chaves_validadas)
 
-        QUERIES["tabela_final"] = f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro"
+        QUERIES["tabela_final"] = f"SELECT * EXCLUDE({colunas}) FROM dadosFiltro ORDER BY data_hora "
         tabelaAux = con.execute(QUERIES["tabela_final"]).df()
 
         tabelaAux.replace({np.nan: None}, inplace=True)
@@ -231,15 +231,11 @@ async def info_estacao(
             if estacao.empty:
                 return "Nenhuma estação com o id fornecido"
 
-            df = con.execute(QUERIES["estacao_dados"], [id_estacao]).df()
-
-            df.replace({np.nan: None}, inplace=True)  # Substitui NaN por None
             estacao.replace({np.nan: None}, inplace=True)
 
             estacao = estacao.to_dict("records")
-            resultado = df.to_dict("records")
 
-            return {"Estação": estacao, "Dados obtidos": resultado}
+            return {"Estação": estacao}
 
     return "nenhum dado fornecido"
 
