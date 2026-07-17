@@ -53,7 +53,7 @@ Para a realização adequada do Contêiner, é necessário especificar no `docke
 ```
 services:
   api:
-    image: virtoal/fastapi-simepar:1.0.6
+    image: virtoal/fastapi-simepar:1.0.7
     container_name: nome-do-container
     ports:
       - "8000:8000"
